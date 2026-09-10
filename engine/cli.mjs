@@ -14,6 +14,16 @@
  *   --scale=N       device pixel ratio for PNGs (default 1)
  */
 import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { config as loadEnv } from 'dotenv';
+
+// Load .env from the project root regardless of the caller's working directory -
+// on Windows in particular, people run this from all kinds of places. Explicit
+// path + explicit call (rather than the `dotenv/config` auto-loader) so this is
+// guaranteed to run before engine/canva.mjs reads CANVA_ENTERPRISE at import time.
+loadEnv({ path: join(dirname(fileURLToPath(import.meta.url)), '..', '.env'), quiet: true });
+
 import { render } from './render.mjs';
 import { listAll } from './registry.mjs';
 import { tokens } from '../templates/_kit.mjs';

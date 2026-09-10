@@ -21,7 +21,15 @@ import { existsSync } from 'node:fs';
 import { createHash, randomBytes } from 'node:crypto';
 import { createServer } from 'node:http';
 import { join, basename, extname } from 'node:path';
+import { config as loadEnv } from 'dotenv';
 import { ROOT } from '../templates/_kit.mjs';
+
+// SCOPES below reads process.env at module-load time, so .env has to be loaded
+// before that runs. Every entry point (cli.mjs, app/server.mjs) already loads it
+// before this module can be reached - this is a defensive second load in case
+// canva.mjs is ever imported some other way. dotenv never overwrites a variable
+// that is already set, so this is a harmless no-op when it isn't needed.
+loadEnv({ path: join(ROOT, '.env'), quiet: true });
 
 const API = 'https://api.canva.com/rest/v1';
 const AUTHORIZE = 'https://www.canva.com/api/oauth/authorize';

@@ -17,6 +17,12 @@ import { join, extname, basename, normalize } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import { config as loadEnv } from 'dotenv';
+
+// Load .env from the project root before anything reads ANTHROPIC_API_KEY or
+// CANVA_*. Explicit call, not the `dotenv/config` auto-loader, so the path is
+// correct regardless of the working directory `npm start` was run from.
+loadEnv({ path: join(dirname(fileURLToPath(import.meta.url)), '..', '.env'), quiet: true });
 
 import { ROOT, tokens } from '../templates/_kit.mjs';
 import { render, OUT } from '../engine/render.mjs';
