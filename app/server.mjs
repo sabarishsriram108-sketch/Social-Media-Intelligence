@@ -17,6 +17,7 @@ import { join, extname, basename, normalize } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import { exec } from 'node:child_process';
 import { config as loadEnv } from 'dotenv';
 
 // Load .env from the project root before anything reads ANTHROPIC_API_KEY or
@@ -39,8 +40,37 @@ const BRAND = {
   site: process.env.BRAND_SITE || 'onamcloud.com',
 };
 
-/** jobId -> { platform, type, palette, fields, artboards } */
+/**
+ * jobId -> { platform, type, palette, fields, artboards, text, createdAt, updatedAt }
+ *
+ * This is the portal's memory. Every generate and every edit writes straight
+ * through to disk (job.json next to that post's rendered files), so closing
+ * the window or restarting the app never loses work - the single-work-area
+ * promise only holds if nothing here is throwaway.
+ */
 const jobs = new Map();
+const jobDir = (jobId) => join(APP_OUT, jobId);
+const jobFile = (jobId) => join(jobDir(jobId), 'job.json');
+
+async function saveJob(job) {
+  await mkdir(jobDir(job.jobId), { recursive: true });
+  await writeFile(jobFile(job.jobId), JSON.stringify(job, null, 2));
+}
+
+async function loadHistory() {
+  if (!existsSync(APP_OUT)) return;
+  for (const entry of await readdir(APP_OUT, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const f = jobFile(entry.name);
+    if (!existsSync(f)) continue;
+    try {
+      const job = JSON.parse(await readFile(f, 'utf8'));
+      jobs.set(job.jobId, job);
+    } catch (e) {
+      console.warn(`  ! Skipped unreadable history entry ${entry.name}: ${e.message}`);
+    }
+  }
+}
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.pdf': 'application/pdf', '.svg': 'image/svg+xml', '.json': 'application/json' };
 
@@ -131,8 +161,10 @@ async function handle(req, res, url) {
     const jobId = randomUUID().slice(0, 8);
     const pal = palette && tokens.palettes[palette] ? palette : tokens.activePalette;
     const artboards = await renderJob({ jobId, platform, type, palette: pal, fields: composed.fields });
-    const job = { jobId, platform, type, palette: pal, fields: composed.fields, artboards };
+    const now = new Date().toISOString();
+    const job = { jobId, platform, type, palette: pal, fields: composed.fields, artboards, text, createdAt: now, updatedAt: now };
     jobs.set(jobId, job);
+    await saveJob(job);
     return json(res, 200, { ...job, engine: composed.engine, degraded: composed.degraded || null });
   }
 
@@ -144,7 +176,32 @@ async function handle(req, res, url) {
     job.fields = { ...job.fields, ...fields };
     if (palette && tokens.palettes[palette]) job.palette = palette;
     job.artboards = await renderJob(job);
+    job.updatedAt = new Date().toISOString();
+    await saveJob(job);
     return json(res, 200, job);
+  }
+
+  // ---- everything generated so far, most recent first - the portal's memory
+  if (req.method === 'GET' && url.pathname === '/api/history') {
+    const list = [...jobs.values()]
+      .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''))
+      .slice(0, 200)
+      .map((job) => {
+        let label = `${job.platform} · ${job.type}`;
+        try { const { platform: p, type: t } = findType(job.platform, job.type); label = `${p.label} · ${t.label}`; } catch {}
+        const headline = job.fields?.headline || job.fields?.quote || job.fields?.value || job.text?.slice(0, 60) || '';
+        return { ...job, label, headline };
+      });
+    return json(res, 200, { jobs: list });
+  }
+
+  // ---- remove a draft from history (the rendered files stay on disk either way)
+  if (req.method === 'DELETE' && url.pathname.startsWith('/api/history/')) {
+    const jobId = url.pathname.slice('/api/history/'.length);
+    if (!jobs.has(jobId)) return json(res, 404, { error: 'Not found.' });
+    jobs.delete(jobId);
+    await unlink(jobFile(jobId)).catch(() => {});
+    return json(res, 200, { ok: true });
   }
 
   // ---- push to Canva
@@ -223,10 +280,23 @@ const server = createServer(async (req, res) => {
 });
 
 await mkdir(APP_OUT, { recursive: true });
+await loadHistory();
+
 server.listen(PORT, '127.0.0.1', () => {
+  const url = `http://127.0.0.1:${PORT}`;
   console.log(`\n  ${BRAND.name} Studio`);
-  console.log(`  http://127.0.0.1:${PORT}\n`);
+  console.log(`  ${url}\n`);
   console.log(`  Copywriter : ${hasApiKey() ? 'Claude (claude-opus-5)' : 'mechanical fallback — set ANTHROPIC_API_KEY for real copy'}`);
   console.log(`  Canva      : ${process.env.CANVA_CLIENT_ID ? 'credentials present' : 'not configured — see docs/01-CONNECT-CANVA.md'}`);
-  console.log(`  Logo       : ${existsSync(join(ROOT, 'brand', 'logo.svg')) ? 'brand/logo.svg' : 'placeholder mark (drop in brand/logo.svg)'}\n`);
+  console.log(`  Logo       : ${findLogoFile() ? 'yours, set' : 'placeholder mark (upload one from the app header)'}`);
+  console.log(`  History    : ${jobs.size} draft${jobs.size === 1 ? '' : 's'} loaded from previous sessions\n`);
+
+  // Open the browser automatically, like a real app rather than something you
+  // start and then go find. Set NO_OPEN=1 to skip this (e.g. scripted restarts).
+  if (!process.env.NO_OPEN) {
+    const cmd = process.platform === 'win32' ? `start "" "${url}"`
+      : process.platform === 'darwin' ? `open "${url}"`
+      : `xdg-open "${url}"`;
+    exec(cmd, () => {}); // best-effort - a failure here should never stop the server
+  }
 });

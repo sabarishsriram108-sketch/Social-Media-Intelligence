@@ -2,10 +2,17 @@
 
 Pick a platform. Pick a post type. Paste plain text. Get an on-brand, editable Canva design.
 
+Your single work area for this — runs on your own computer, nothing hosted, nothing lost. Every draft is saved automatically and reopenable from **History**.
+
+**Windows:** double-click `Start Onam Cloud Studio.bat`.
+
+**Terminal:**
 ```bash
 npm install
-npm start          # http://127.0.0.1:4321
+npm start          # http://127.0.0.1:4321 — opens your browser automatically
 ```
+
+Full walkthrough: [docs/00-THE-APP.md](docs/00-THE-APP.md).
 
 
 ## What it does

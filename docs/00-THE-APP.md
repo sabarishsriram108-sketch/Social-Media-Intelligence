@@ -1,11 +1,27 @@
 # The application
 
+Your single work area for Onam Cloud social content. It runs on your own computer — nothing is hosted on the internet, nothing is exposed beyond your machine — but it behaves like a real portal: launch it, everything you've made is still there, work, close it, come back tomorrow and pick up where you left off.
+
+## Launching it
+
+**Windows — double-click `Start Onam Cloud Studio.bat`** in the project folder (make a desktop shortcut to it and you never touch a terminal again). First run installs everything automatically; every run after that is instant. A browser window opens on its own once it's ready.
+
+Prefer the terminal:
 ```bash
 npm install
-npm start          # http://127.0.0.1:4321
+npm start          # http://127.0.0.1:4321 — opens your browser automatically
 ```
 
-Four steps, one screen.
+Either way, the terminal/command window that opens has to stay open while you work — it's running the app. Closing it stops the app. That's normal; just reopen it (double-click the `.bat` again, or `npm start`) next time.
+
+## The four steps + always-on navigation
+
+Two buttons sit in the header on every screen, not just step one:
+
+- **+ New post** — clears the form and takes you back to step 01, without losing anything already saved.
+- **History** — opens every post you've ever generated in this workspace, most recent first. Click one to reopen it exactly where you left it — copy, artboards, palette, all of it — and keep editing or push it to Canva. Hover a row to reveal a small × if you want to remove it from the list (the rendered files stay on disk either way).
+
+The four steps themselves:
 
 | Step | What you do | What happens |
 |---|---|---|
@@ -47,7 +63,7 @@ Under each artboard the app reports its dimensions and, when it happened, that i
 
 ## Things worth knowing
 
-- The app binds to `127.0.0.1` only. It holds your Canva tokens; do not put it on a network interface.
-- Drafts live in memory. Restarting the server clears them; the rendered files stay in `out/app/<jobId>/`.
+- The app binds to `127.0.0.1` only — nothing is reachable from any other device, by design. It holds your Canva tokens; never put it on a shared network interface or expose it to the internet.
+- **Every draft is saved to disk the moment it's generated or edited** — `out/app/<jobId>/job.json` alongside its rendered files. Closing the app, restarting your PC, none of it loses your work; open **History** and it's all there. (Wiping the `out/` folder by hand is the one thing that clears it — that folder is your archive.)
 - Nothing is posted anywhere. The app stops at "editable design in Canva" — the last mile is yours, deliberately.
 - Claude never invents a statistic, a customer name, or a result you did not supply. If your text is too thin to fill the artboard honestly, it says so in the notes rather than padding.
