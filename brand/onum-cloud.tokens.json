@@ -1,0 +1,96 @@
+{
+  "$meta": {
+    "brand": "Onum Cloud",
+    "owner": "Saints & Masters - Corporate Strategy",
+    "version": "1.0.0",
+    "assumption": "Brand colours are a proposed system, not supplied hex values. Swap the `palettes.*` block to adopt the official Onum Cloud kit; every artboard reskins with no template edits.",
+    "rule": "Maximum two chromatic hues per artboard. Everything else is ink, paper or mist."
+  },
+
+  "activePalette": "deep-current",
+
+  "palettes": {
+    "deep-current": {
+      "label": "Deep Current",
+      "story": "Deep ocean ink with an azure-to-aqua current running through it. Reads as infrastructure: calm, deep, always moving. Default system.",
+      "ink":      "#060A16",
+      "ink2":     "#0C1428",
+      "ink3":     "#16203C",
+      "paper":    "#F4F6FB",
+      "paper2":   "#E4E9F5",
+      "mist":     "#8A97B8",
+      "a1":       "#3D7BFF",
+      "a2":       "#5FE3C0",
+      "aInk":     "#04121A",
+      "onAccent": "#04121A"
+    },
+    "signal": {
+      "label": "Signal",
+      "story": "Near-black editorial ground with an amber-to-ember flare. Highest stopping power in a LinkedIn feed. Use for launches and POV pieces.",
+      "ink":      "#0A0A0B",
+      "ink2":     "#141416",
+      "ink3":     "#232327",
+      "paper":    "#FAF7F2",
+      "paper2":   "#EDE7DC",
+      "mist":     "#8F8A82",
+      "a1":       "#FFB020",
+      "a2":       "#FF6A3D",
+      "aInk":     "#1A0E00",
+      "onAccent": "#1A0E00"
+    },
+    "monsoon": {
+      "label": "Monsoon",
+      "story": "Deep teal with a coral break. Warmer and regionally distinctive - differentiates from the wall of SaaS blue in the Indian enterprise feed.",
+      "ink":      "#03191D",
+      "ink2":     "#062B31",
+      "ink3":     "#0C4048",
+      "paper":    "#F2F7F5",
+      "paper2":   "#DDE9E5",
+      "mist":     "#7C9A97",
+      "a1":       "#00C2A8",
+      "a2":       "#FF6B5B",
+      "aInk":     "#02171A",
+      "onAccent": "#02171A"
+    }
+  },
+
+  "type": {
+    "display": "'Space Grotesk', 'DejaVu Sans', sans-serif",
+    "body": "'Inter', 'DejaVu Sans', sans-serif",
+    "scale": { "ratio": 1.25, "baseIsPercentOfCanvasWidth": 1 },
+    "rules": [
+      "Display face carries headlines only. Never set body copy in Space Grotesk.",
+      "Headline tracking is negative (-0.03em) at large sizes, neutral below 3rem.",
+      "Eyebrow / kicker text is uppercase Inter 600 at 0.16em tracking.",
+      "Never more than 3 type sizes on one artboard."
+    ]
+  },
+
+  "motifs": {
+    "contour": "Concentric rounded-rect contours radiating from a node. The house pattern. Low opacity, always anchored off-canvas.",
+    "nodeGrid": "Sparse dot matrix with 2-3 illuminated, connected nodes. Signals network and edge.",
+    "cut": "Signature 12-degree diagonal separating the accent field from the ink field. Always top-left to bottom-right.",
+    "aperture": "Rounded square frame with one corner squared to 0px. Used for logo lockups, avatars and imagery."
+  },
+
+  "geometry": {
+    "cutAngle": "-12deg",
+    "radius": { "sm": "0.8rem", "md": "1.6rem", "lg": "2.6rem", "pill": "999rem" },
+    "margin": { "narrow": "7%", "default": "8.5%", "wide": "10%" },
+    "hairline": "0.09rem"
+  },
+
+  "gridRhythm": {
+    "note": "Instagram profile grid reads as a designed surface only if archetypes cycle. Post in this order and the grid forms a diagonal rhythm on its own.",
+    "cycle": ["STATEMENT", "DATA", "INSIGHT"],
+    "STATEMENT": "Ink field. One huge sentence. Accent underline. Zero decoration beyond the contour motif.",
+    "DATA": "Accent field. One number at extreme scale. Ink type. Contour motif in aInk.",
+    "INSIGHT": "Paper field. Editorial: eyebrow, headline, 2-line standfirst, rule, byline. Ink type, accent rule."
+  },
+
+  "voice": {
+    "register": "Confident operator, not vendor. Specific over superlative.",
+    "banned": ["revolutionary", "game-changing", "seamless", "unlock the power of", "in today's fast-paced world"],
+    "numbers": "Always Indian numbering where the audience is domestic (crore/lakh), international format for global posts. State the basis of any metric."
+  }
+}

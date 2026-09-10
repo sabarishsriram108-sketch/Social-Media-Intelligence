@@ -1,0 +1,17 @@
+{
+  "name": "onum-social-intelligence",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Onum Cloud social media intelligence system - brief in, on-brand artboards out, pushed to Canva as editable designs.",
+  "type": "module",
+  "scripts": {
+    "render": "node engine/cli.mjs render",
+    "preview": "node engine/cli.mjs render --all --gallery",
+    "push": "node engine/cli.mjs push",
+    "specs": "node engine/cli.mjs specs",
+    "doctor": "node engine/cli.mjs doctor"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

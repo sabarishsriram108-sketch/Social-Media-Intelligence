@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Onum Cloud content brief",
+  "type": "object",
+  "required": ["id", "posts"],
+  "properties": {
+    "id": { "type": "string", "description": "Campaign slug; becomes the out/ directory name." },
+    "palette": { "enum": ["deep-current", "signal", "monsoon"] },
+    "brand": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "handle": { "type": "string" },
+        "site": { "type": "string" },
+        "logoSvg": { "type": ["string", "null"], "description": "Raw SVG replacing the placeholder mark." }
+      }
+    },
+    "defaults": { "type": "object", "description": "Merged into every post; post fields win." },
+    "posts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["platform", "artboard"],
+        "properties": {
+          "platform": { "enum": ["instagram", "linkedin", "x", "youtube", "ig", "li", "twitter", "yt"] },
+          "artboard": { "type": "string" },
+          "name": { "type": "string", "description": "Optional suffix to disambiguate repeated artboards." },
+          "eyebrow": { "type": "string" },
+          "headline": { "type": "string" },
+          "emphasise": { "type": "integer", "minimum": 0, "description": "Accent-underline the last N words." },
+          "lede": { "type": "string" },
+          "tag": { "type": "string" },
+          "value": { "type": "string" },
+          "unit": { "type": "string" },
+          "caption": { "type": "string" },
+          "source": { "type": "string" },
+          "quote": { "type": "string" },
+          "points": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
+          "breakdown": {
+            "type": "array", "maxItems": 4,
+            "items": {
+              "type": "object",
+              "required": ["label", "value"],
+              "properties": {
+                "label": { "type": "string" }, "value": { "type": "string" },
+                "pct": { "type": "number", "minimum": 0, "maximum": 100 }
+              }
+            }
+          },
+          "author": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" }, "role": { "type": "string" },
+              "avatar": { "type": "string", "description": "Image path/URL; omit for initials." }
+            }
+          },
+          "slides": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title"],
+              "properties": {
+                "title": { "type": "string" }, "body": { "type": "string" },
+                "stat": { "type": "string" }, "statLabel": { "type": "string" }
+              }
+            }
+          },
+          "cta": {
+            "type": "object",
+            "properties": {
+              "eyebrow": { "type": "string" }, "headline": { "type": "string" }, "action": { "type": "string" }
+            }
+          },
+          "subject": { "type": "string", "description": "YouTube thumbnail cut-out image." },
+          "episode": { "type": "string" },
+          "duration": { "type": "string" },
+          "cadence": { "type": "string" },
+          "threadLength": { "type": "integer" },
+          "brandTemplateId": { "type": "string", "description": "Canva Enterprise autofill target." }
+        }
+      }
+    }
+  }
+}

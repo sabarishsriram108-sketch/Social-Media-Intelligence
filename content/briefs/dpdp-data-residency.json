@@ -1,0 +1,274 @@
+{
+  "id": "dpdp-data-residency",
+  "palette": "deep-current",
+  "brand": {
+    "name": "Onum Cloud",
+    "handle": "@onumcloud",
+    "site": "onum.cloud"
+  },
+  "defaults": {
+    "tag": "Compliance"
+  },
+  "posts": [
+    {
+      "platform": "instagram",
+      "artboard": "feed-statement",
+      "eyebrow": "DPDP Act - 2026",
+      "headline": "Your data is compliant. Your cloud bill is not.",
+      "emphasise": 3,
+      "lede": "Localisation done badly costs 3x. Done right, it costs less than what you pay today.",
+      "tag": "Archetype A"
+    },
+    {
+      "platform": "instagram",
+      "artboard": "feed-data",
+      "eyebrow": "What migration actually costs",
+      "value": "41",
+      "unit": "%",
+      "caption": "of Indian enterprises re-architected twice because the first data-residency move was lift-and-shift.",
+      "source": "Onum Cloud migration desk, 62 engagements, FY25-26",
+      "tag": "Archetype B"
+    },
+    {
+      "platform": "instagram",
+      "artboard": "feed-insight",
+      "eyebrow": "Field note",
+      "headline": "Residency is an architecture decision, not a hosting decision.",
+      "lede": "Move the data and leave the control plane offshore, and you have not localised anything. You have just added latency.",
+      "author": {
+        "name": "Sabarish Sriram",
+        "role": "Corporate Strategy, Saints & Masters"
+      },
+      "tag": "Archetype C"
+    },
+    {
+      "platform": "instagram",
+      "artboard": "carousel",
+      "eyebrow": "5-minute read",
+      "headline": "Four ways DPDP quietly breaks your cloud architecture.",
+      "emphasise": 4,
+      "lede": "And what it costs to fix each one after the fact.",
+      "slides": [
+        {
+          "title": "Cross-border backups",
+          "body": "Your DR region is in Singapore. Under DPDP that is a transfer, not a backup. Re-siting DR mid-contract is the single most expensive fix we see."
+        },
+        {
+          "title": "The offshore control plane",
+          "body": "Data at rest in Mumbai, orchestration in Virginia. Auditors read the control plane as processing. Most teams find this in month nine."
+        },
+        {
+          "title": "Third-party SaaS in the path",
+          "body": "Every observability, logging and support tool touching personal data inherits your obligations. Average enterprise stack: 14 such tools."
+        },
+        {
+          "title": "Consent as an afterthought",
+          "body": "Retrofitting consent state into a data model designed without it is a schema migration, not a feature. Budget quarters, not sprints."
+        }
+      ],
+      "cta": {
+        "eyebrow": "Next step",
+        "headline": "Get the 90-minute residency readiness review.",
+        "action": "onum.cloud/dpdp"
+      }
+    },
+    {
+      "platform": "instagram",
+      "artboard": "reel-cover",
+      "eyebrow": "60 seconds",
+      "headline": "The DR region that broke compliance.",
+      "emphasise": 2,
+      "lede": "One architecture diagram. Three findings.",
+      "duration": "01:04",
+      "tag": "Reel"
+    },
+    {
+      "platform": "linkedin",
+      "artboard": "post",
+      "eyebrow": "POV - Data residency",
+      "headline": "Most Indian enterprises localised the data and forgot the control plane.",
+      "emphasise": 3,
+      "lede": "We reviewed 62 migrations across FY25-26. The pattern is consistent enough to be predictable.",
+      "points": [
+        "Data at rest in-country, orchestration offshore - reads as processing to an auditor.",
+        "DR regions outside India convert every backup into a cross-border transfer.",
+        "The fix is cheapest at design, 3x at build, 9x after the first audit finding."
+      ],
+      "author": {
+        "name": "Sabarish Sriram",
+        "role": "Corporate Strategy, Saints & Masters"
+      },
+      "tag": "Field data"
+    },
+    {
+      "platform": "linkedin",
+      "artboard": "evidence",
+      "eyebrow": "Where residency budgets actually go",
+      "value": "3.1",
+      "unit": "x",
+      "caption": "cost multiple when residency is retrofitted after go-live rather than designed in.",
+      "breakdown": [
+        {
+          "label": "Re-architecture",
+          "value": "44%",
+          "pct": 44
+        },
+        {
+          "label": "Data migration + validation",
+          "value": "31%",
+          "pct": 31
+        },
+        {
+          "label": "Audit remediation",
+          "value": "25%",
+          "pct": 25
+        }
+      ],
+      "source": "Onum Cloud migration desk, n=62 engagements, FY25-26. Costs indexed to design-stage baseline.",
+      "tag": "Evidence"
+    },
+    {
+      "platform": "linkedin",
+      "artboard": "quote",
+      "quote": "Compliance is not a region you deploy into. It is a decision you make about where control lives.",
+      "author": {
+        "name": "Sabarish Sriram",
+        "role": "Corporate Strategy, Saints & Masters"
+      }
+    },
+    {
+      "platform": "linkedin",
+      "artboard": "carousel",
+      "eyebrow": "Board briefing",
+      "headline": "What DPDP costs you, by the quarter you start.",
+      "emphasise": 4,
+      "lede": "A cost curve every CIO should have in front of their board this quarter.",
+      "tag": "6 slides",
+      "slides": [
+        {
+          "title": "Design stage",
+          "body": "Residency built into the target architecture before a single workload moves. Incremental cost is design time only.",
+          "stat": "1.0x",
+          "statLabel": "baseline"
+        },
+        {
+          "title": "Build stage",
+          "body": "Caught during migration. Re-siting DR and relocating the control plane while workloads are in flight.",
+          "stat": "1.9x",
+          "statLabel": "vs baseline"
+        },
+        {
+          "title": "Post go-live",
+          "body": "Found by an internal review. Re-architecture plus full data revalidation, with production running.",
+          "stat": "3.1x",
+          "statLabel": "vs baseline"
+        },
+        {
+          "title": "Post-audit finding",
+          "body": "Remediation under a clock, with regulatory exposure priced in. This is where the budget conversation stops being technical.",
+          "stat": "9.4x",
+          "statLabel": "vs baseline"
+        }
+      ],
+      "cta": {
+        "eyebrow": "Next step",
+        "headline": "Book the residency readiness review.",
+        "action": "onum.cloud/dpdp"
+      }
+    },
+    {
+      "platform": "linkedin",
+      "artboard": "page-banner",
+      "headline": "Cloud that stays in country.",
+      "emphasise": 2,
+      "lede": "Onum Cloud - migration, residency and FinOps for Indian enterprises."
+    },
+    {
+      "platform": "linkedin",
+      "artboard": "profile-banner",
+      "headline": "Cloud strategy that survives the audit.",
+      "emphasise": 2,
+      "lede": "Corporate Strategy at Saints & Masters. Writing about cloud economics, residency and Indian enterprise IT."
+    },
+    {
+      "platform": "x",
+      "artboard": "card",
+      "eyebrow": "DPDP - the part nobody budgets for",
+      "headline": "You moved the data. You left the control plane in Virginia.",
+      "emphasise": 2,
+      "lede": "Auditors read orchestration as processing. 62 migrations reviewed; this was the most common finding.",
+      "tag": "Thread 1/9"
+    },
+    {
+      "platform": "x",
+      "artboard": "metric",
+      "eyebrow": "Cost of retrofitting residency",
+      "value": "9.4",
+      "unit": "x",
+      "caption": "cost multiple once a residency gap is found by an auditor rather than an architect.",
+      "breakdown": [
+        {
+          "label": "At design",
+          "value": "1.0x",
+          "pct": 11
+        },
+        {
+          "label": "At build",
+          "value": "1.9x",
+          "pct": 20
+        },
+        {
+          "label": "Post go-live",
+          "value": "3.1x",
+          "pct": 33
+        },
+        {
+          "label": "Post-audit",
+          "value": "9.4x",
+          "pct": 100
+        }
+      ],
+      "source": "Onum Cloud migration desk, n=62, FY25-26"
+    },
+    {
+      "platform": "x",
+      "artboard": "thread-cover",
+      "eyebrow": "Thread",
+      "headline": "Nine ways DPDP breaks a cloud architecture.",
+      "emphasise": 3,
+      "lede": "From 62 migrations. Most teams hit four of them.",
+      "threadLength": 9
+    },
+    {
+      "platform": "x",
+      "artboard": "header",
+      "headline": "Cloud economics, residency, and Indian enterprise IT.",
+      "emphasise": 3
+    },
+    {
+      "platform": "youtube",
+      "artboard": "thumbnail",
+      "eyebrow": "Case teardown",
+      "headline": "This broke compliance",
+      "emphasise": 0,
+      "episode": "Cloud Teardown - Ep 04"
+    },
+    {
+      "platform": "youtube",
+      "artboard": "banner",
+      "headline": "Cloud Teardown",
+      "emphasise": 1,
+      "lede": "Real Indian enterprise cloud architectures, pulled apart and costed. Every other Thursday.",
+      "cadence": "New every other Thursday"
+    },
+    {
+      "platform": "youtube",
+      "artboard": "community",
+      "eyebrow": "Next episode",
+      "headline": "Which teardown do you want next?",
+      "emphasise": 2,
+      "lede": "Drop a vote: DR re-siting, FinOps on a 12-crore spend, or consent-state schema migration.",
+      "tag": "Poll"
+    }
+  ]
+}
