@@ -24,14 +24,20 @@ The three chips in the header tell you what the app can actually do right now.
 |---|---|
 | `Copy: Claude` | `ANTHROPIC_API_KEY` is set. Real copywriting. |
 | `Copy: fallback` | No key. The app still works, but it mechanically splits your text rather than writing it. Fine for checking a layout; not fine for posting. |
-| `Logo: yours` | `brand/logo.svg` exists and every artboard uses it. |
-| `Logo: placeholder` | Still drawing the placeholder mark. See below. |
+| `Logo: yours` | A real logo is on file and every artboard uses it. Click it any time to replace. |
+| `Logo: click to upload` | Still drawing the placeholder mark. Click the chip to fix that. |
 | `Canva: connected` | Credentials and a completed sign-in. The push button works. |
 | `Canva: not connected` | See [docs/01-CONNECT-CANVA.md](01-CONNECT-CANVA.md). |
 
 ## Dropping in the real logo
 
-The app draws a placeholder mark until you give it the real one. Save the Onam Cloud logo as **`brand/logo.svg`** and restart — every one of the 22 artboards picks it up, no template edits. SVG is strongly preferred; it stays sharp at 2560px.
+The app draws a placeholder mark until you give it the real one.
+
+**Easiest path — click the logo chip.** In the header, click **`Logo: click to upload`**, pick the file from wherever you saved it (Downloads, Desktop, wherever), and you're done. No restart — the very next artboard you generate or redraw uses it. Click the chip again any time to replace it with a different file.
+
+SVG, PNG, JPG and WebP all work. SVG is best if you have it — it stays sharp on a 2560px YouTube banner where a raster image would start to soften — but PNG is completely fine for everyday use.
+
+If you'd rather place the file yourself: save it as `brand/logo.svg` (or `.png` / `.jpg` / `.webp`) and it's picked up the same way, live, no restart. Only one `brand/logo.*` should exist at a time — uploading through the app handles that for you automatically.
 
 ## Editing before you post
 

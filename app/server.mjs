@@ -11,7 +11,7 @@
  * Binds to loopback only. It holds your Canva tokens - do not expose it.
  */
 import { createServer } from 'node:http';
-import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, extname, basename, normalize } from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -24,7 +24,7 @@ import { config as loadEnv } from 'dotenv';
 // correct regardless of the working directory `npm start` was run from.
 loadEnv({ path: join(dirname(fileURLToPath(import.meta.url)), '..', '.env'), quiet: true });
 
-import { ROOT, tokens } from '../templates/_kit.mjs';
+import { ROOT, tokens, findLogoFile, LOGO_EXTS } from '../templates/_kit.mjs';
 import { render, OUT } from '../engine/render.mjs';
 import { PLATFORMS, findType } from './catalog.mjs';
 import { compose, hasApiKey } from './compose.mjs';
@@ -119,7 +119,7 @@ async function handle(req, res, url) {
       activePalette: tokens.activePalette,
       brand: BRAND,
       copywriter: hasApiKey() ? 'claude' : 'heuristic',
-      hasLogo: existsSync(join(ROOT, 'brand', 'logo.svg')),
+      hasLogo: !!findLogoFile(),
     });
   }
 
@@ -178,15 +178,35 @@ async function handle(req, res, url) {
     });
   }
 
-  // ---- drop in the real logo
+  // ---- drop in the real logo (file upload from the header control, or a
+  // pasted <svg>...</svg> string - either lands here)
   if (req.method === 'POST' && url.pathname === '/api/logo') {
-    const body = await readBody(req);
-    const svg = body.toString('utf8').trim();
-    if (!svg.startsWith('<svg') && !svg.includes('<svg')) {
-      return json(res, 400, { error: 'That does not look like an SVG. Paste the logo SVG markup, or save it as brand/logo.svg.' });
+    const body = await readBody(req, 8_000_000);
+    const ctype = (req.headers['content-type'] || '').split(';')[0].trim();
+    const byExt = { 'image/svg+xml': '.svg', 'image/png': '.png', 'image/jpeg': '.jpg', 'image/webp': '.webp' };
+    let ext = byExt[ctype];
+
+    if (!ext) {
+      // No usable content-type (a raw paste, or a browser that sent
+      // application/octet-stream) - sniff the bytes instead of trusting the header.
+      const head = body.subarray(0, 16);
+      if (head.toString('utf8', 0, 5) === '<?xml' || body.toString('utf8', 0, 200).includes('<svg')) ext = '.svg';
+      else if (head[0] === 0x89 && head[1] === 0x50) ext = '.png'; // \x89PNG
+      else if (head[0] === 0xff && head[1] === 0xd8) ext = '.jpg'; // JPEG SOI marker
+      else if (head.toString('ascii', 8, 12) === 'WEBP') ext = '.webp';
     }
-    await writeFile(join(ROOT, 'brand', 'logo.svg'), svg);
-    return json(res, 200, { ok: true, note: 'Logo saved. Restart the app so every artboard picks it up.' });
+    if (!ext) {
+      return json(res, 400, { error: 'Unrecognised file. Use SVG, PNG, JPG or WebP.' });
+    }
+
+    // Only one brand/logo.* may exist - otherwise findLogoFile()'s SVG-first
+    // preference would silently keep serving a stale file after a PNG upload.
+    for (const e of LOGO_EXTS) {
+      const stale = join(ROOT, 'brand', `logo${e}`);
+      if (existsSync(stale)) await unlink(stale).catch(() => {});
+    }
+    await writeFile(join(ROOT, 'brand', `logo${ext}`), body);
+    return json(res, 200, { ok: true, ext, note: 'Logo saved — every artboard uses it from your next render, no restart needed.' });
   }
 
   return send(res, 404, 'not found');

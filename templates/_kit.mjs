@@ -21,14 +21,38 @@ export const tokens = JSON.parse(
 
 /**
  * Real Onam Cloud mark, if one has been dropped in.
- * Save the logo from onamcloud.com as `brand/logo.svg` and every artboard picks
- * it up on the next render - no template edits. Until then `mark()` draws the
- * placeholder glyph below. The app exposes this as an upload slot.
+ * Drop the logo at `brand/logo.svg`, `.png`, `.jpg` or `.webp` (checked in that
+ * order - SVG wins if more than one exists), or upload it from the app's header.
+ * Every artboard picks it up on its NEXT render - a function re-read from disk
+ * each call, not a value cached at process start, so nothing needs restarting.
+ * Until one exists, `mark()` draws the placeholder glyph below.
+ *
+ * Raster formats are embedded as a base64 data URI rather than a file path.
+ * Artboards render from several different on-disk depths (out/<id>/*.html, the
+ * merged PDF documents, the app's out/app/<jobId>/*.html) and a relative path
+ * that is correct for one is wrong for the others - a data URI sidesteps that
+ * entirely, at the cost of a few KB duplicated into every HTML file.
  */
-export const BRAND_LOGO = (() => {
-  const f = join(ROOT, 'brand', 'logo.svg');
-  return existsSync(f) ? readFileSync(f, 'utf8').replace(/<\?xml[^>]*\?>/g, '').trim() : null;
-})();
+export const LOGO_EXTS = ['.svg', '.png', '.jpg', '.jpeg', '.webp'];
+const LOGO_MIME = { '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp' };
+
+export function findLogoFile() {
+  for (const ext of LOGO_EXTS) {
+    const f = join(ROOT, 'brand', `logo${ext}`);
+    if (existsSync(f)) return { file: f, ext };
+  }
+  return null;
+}
+
+export function brandLogo() {
+  const found = findLogoFile();
+  if (!found) return null;
+  if (found.ext === '.svg') {
+    return readFileSync(found.file, 'utf8').replace(/<\?xml[^>]*\?>/g, '').trim();
+  }
+  const b64 = readFileSync(found.file).toString('base64');
+  return `<img src="data:${LOGO_MIME[found.ext]};base64,${b64}" alt="">`;
+}
 
 export const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) =>
@@ -119,7 +143,7 @@ export function avatar(author = {}, { size = '5.2rem' } = {}) {
 }
 
 export function logo({ name = 'Onam Cloud', size = '3.4rem', tone = 'light', logoSvg = null } = {}) {
-  const supplied = logoSvg || BRAND_LOGO;
+  const supplied = logoSvg || brandLogo();
   const glyph = supplied
     ? `<span class="mark-slot" style="width:${size};height:${size}">${supplied}</span>`
     : mark({ size, fg: tone === 'dark' ? 'var(--aInk)' : 'var(--a2)', ring: tone === 'dark' ? 'var(--aInk)' : 'var(--a1)' });

@@ -1,6 +1,6 @@
 # Onam Cloud — the visual system
 
-> **Assumption, stated plainly.** The orange / black / white direction is the client's. The exact hex values, the type pairing and the mark are proposed pending the official kit. Everything is token-driven: replace the `palettes.*` block in `brand/onam-cloud.tokens.json`, drop the real logo at `brand/logo.svg`, and all 22 artboards reskin with no template edits. Nothing downstream assumes these specific values.
+> **Assumption, stated plainly.** The orange / black / white direction is the client's. The exact hex values, the type pairing and the mark are proposed pending the official kit. Everything is token-driven: replace the `palettes.*` block in `brand/onam-cloud.tokens.json`, drop the real logo in via the app's header (or place it at `brand/logo.svg`/`.png`/`.jpg`/`.webp`), and all 22 artboards reskin with no template edits. Nothing downstream assumes these specific values.
 
 ## The idea
 
