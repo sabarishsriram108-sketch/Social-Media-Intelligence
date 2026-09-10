@@ -28,12 +28,30 @@ const AUTHORIZE = 'https://www.canva.com/api/oauth/authorize';
 const TOKEN_URL = `${API}/oauth/token`;
 const TOKEN_FILE = join(ROOT, '.canva-tokens.json');
 
-export const SCOPES = [
+/**
+ * Scopes must match the boxes ticked on the integration in Canva's developer
+ * portal. Asking for a scope the integration does not have fails the whole
+ * authorization with `invalid_scope` before the consent screen even appears.
+ *
+ * `brandtemplate:*` is Canva Enterprise only and cannot be enabled on a
+ * non-Enterprise integration, so it is OFF by default - requesting it would
+ * break sign-in for everyone else. Turn it on only if your portal offers it:
+ *
+ *   CANVA_ENTERPRISE=1        adds the brand-template scopes
+ *   CANVA_SCOPES="a b c"      replaces the list entirely
+ */
+const CORE_SCOPES = [
   'asset:read', 'asset:write',
   'design:content:read', 'design:content:write', 'design:meta:read',
-  'brandtemplate:meta:read', 'brandtemplate:content:read',
   'profile:read',
 ];
+const ENTERPRISE_SCOPES = ['brandtemplate:meta:read', 'brandtemplate:content:read'];
+
+export const SCOPES = process.env.CANVA_SCOPES
+  ? process.env.CANVA_SCOPES.split(/[\s,]+/).filter(Boolean)
+  : process.env.CANVA_ENTERPRISE === '1'
+    ? [...CORE_SCOPES, ...ENTERPRISE_SCOPES]
+    : CORE_SCOPES;
 
 const b64url = (buf) => buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
@@ -81,6 +99,14 @@ export async function authorize({ port = 8910 } = {}) {
       const u = new URL(req.url, `http://127.0.0.1:${port}`);
       if (u.pathname !== '/oauth/redirect') { res.writeHead(404).end(); return; }
       const err = u.searchParams.get('error');
+      if (err === 'invalid_scope') {
+        console.error(
+          '\n  ✗ Canva rejected the requested scopes.\n' +
+          `    Requested: ${SCOPES.join(' ')}\n` +
+          "    Tick exactly these boxes under Scopes on your integration, or unset\n" +
+          '    CANVA_ENTERPRISE if your plan has no brand-template access.\n'
+        );
+      }
       res.writeHead(200, { 'content-type': 'text/html' });
       res.end(`<body style="font:16px system-ui;padding:40px">${err ? 'Authorisation failed: ' + err : 'Connected. You can close this tab.'}</body>`);
       server.close();
@@ -276,6 +302,11 @@ export async function doctor() {
   console.log(`  Client credentials : ${hasCreds ? 'present' : 'MISSING (set CANVA_CLIENT_ID / CANVA_CLIENT_SECRET)'}`);
   const t = await readTokens();
   console.log(`  Stored tokens      : ${t ? 'yes' : 'no - run `node engine/cli.mjs push <brief>` to authorise'}`);
+  // Most useful precisely when nothing is configured yet - these two strings are
+  // what you copy into the developer portal, and the usual cause of a failed sign-in.
+  console.log(`  Redirect URL       : http://127.0.0.1:8910/oauth/redirect`);
+  console.log(`  Scopes requested   : ${SCOPES.join(' ')}`);
+  console.log(`  ${'-'.repeat(18)}   both must match the integration in Canva's portal exactly`);
   if (!hasCreds || !t) { console.log('\n  See docs/01-CONNECT-CANVA.md\n'); return; }
 
   try {
