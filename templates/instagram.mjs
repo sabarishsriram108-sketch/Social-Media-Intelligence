@@ -5,7 +5,7 @@
  * cycle. Post STATEMENT -> DATA -> INSIGHT and the ink/accent/paper fields fall on
  * a diagonal down the 3-column grid without anyone having to plan it.
  */
-import { esc, emphasise, contour, nodeGrid, logo, eyebrow, footer, stat, swipe, hexA, avatar } from './_kit.mjs';
+import { esc, escDisplay, emphasise, contour, nodeGrid, logo, eyebrow, footer, stat, swipe, hexA, avatar } from './_kit.mjs';
 
 export const platform = 'instagram';
 export const meta = {
@@ -52,7 +52,7 @@ function data(p, pal) {
         <div style="margin-top:2.2rem">${stat({ value: p.value, unit: p.unit, caption: p.caption, tone: 'dark' })}</div>
       </div>
       <div style="padding-top:3rem">
-        ${p.source ? `<p style="font-size:1.25rem;letter-spacing:.04em;opacity:.6;margin-bottom:1.8rem">${esc(p.source)}</p>` : ''}
+        ${p.source ? `<p class="spec" style="font-size:1.2rem;opacity:.6;margin-bottom:1.8rem">${esc(p.source)}</p>` : ''}
         ${footer({ handle: p.brand.handle, site: p.brand.site })}
       </div>
     </div>
@@ -126,11 +126,15 @@ function carousel(p, pal) {
         <div class="motif-wrap" style="left:0;top:0;width:100%;height:2.2%;background:var(--grad)"></div>
         <div class="pad" style="--pad:9%">
           <div style="display:flex;align-items:center;gap:2rem">
-            <span class="accent-text" style="font-family:var(--display);font-weight:700;font-size:6.4rem;line-height:1;letter-spacing:-.04em">${String(i + 1).padStart(2, '0')}</span>
+            <span class="accent-text" style="font-size:6.4rem;line-height:1;letter-spacing:-.04em">${escDisplay(String(i + 1).padStart(2, '0'))}</span>
             <div class="rule" style="width:6rem"></div>
           </div>
-          <div class="stack low">
-            <h2>${esc(s.title)}</h2>
+          <!-- Centred, not bottom-anchored: this stack already has a strong top
+               anchor (the numeral), so a short title+body bottom-anchoring here
+               would strand a large empty gap between the two instead of reading
+               as one composed slide. -->
+          <div class="stack">
+            <h2>${escDisplay(s.title)}</h2>
             ${s.body ? `<p class="body" style="margin-top:2.6rem;max-width:32ch;opacity:.72">${esc(s.body)}</p>` : ''}
           </div>
           <div style="padding-top:3.4rem;display:flex;align-items:center;justify-content:space-between">
@@ -155,7 +159,7 @@ function carousel(p, pal) {
           ${logo({ name: p.brand.name, logoSvg: p.brand.logoSvg })}
           <div class="stack low" style="position:relative;z-index:10">
             ${eyebrow(cta.eyebrow || 'Next step')}
-            <h2 style="margin-top:2.4rem;max-width:16ch">${esc(cta.headline || 'Talk to our cloud team.')}</h2>
+            <h2 style="margin-top:2.4rem;max-width:16ch">${escDisplay(cta.headline || 'Talk to our cloud team.')}</h2>
           </div>
         </div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:3rem;

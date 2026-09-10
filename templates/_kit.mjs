@@ -59,13 +59,28 @@ export const esc = (s) =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
   );
 
+/**
+ * Fraunces's "4" carries a teardrop terminal that overlaps the next glyph at
+ * any tracking below ~.055em at headline/display scale - confirmed across
+ * weight 700/900 and opsz 40-144, on "44%", "24/7", "9.4x", "04", "10,000".
+ * escDisplay() is esc() plus a safety span around every digit run, and is
+ * used everywhere text renders in Fraunces (h1/h2, .editorial, .accent-text,
+ * stat()) - never for eyebrows/captions/body, which are Plex and have no
+ * collision risk; wrapping a lone digit there just to be safe would instead
+ * show as a stray gap before its very next character (the .num span's own
+ * trailing letter-spacing is visible even at a single-glyph boundary).
+ */
+const NUM_RUN = /[₹$]?\d+(?:[.,]\d+)*(?:[xX%])?(?:\/\d+)?/g;
+
+export const escDisplay = (s) => esc(s).replace(NUM_RUN, (m) => `<span class="num">${m}</span>`);
+
 /** Wrap the final N words of a headline in an accent underline. */
 export const emphasise = (text, words = 0) => {
   const parts = String(text).split(' ');
-  if (!words || words >= parts.length) return esc(text);
+  if (!words || words >= parts.length) return escDisplay(text);
   const head = parts.slice(0, parts.length - words).join(' ');
   const tail = parts.slice(parts.length - words).join(' ');
-  return `${esc(head)} <em class="mark">${esc(tail)}</em>`;
+  return `${escDisplay(head)} <em class="mark">${escDisplay(tail)}</em>`;
 };
 
 export function palette(name) {
@@ -80,47 +95,128 @@ export function palette(name) {
  * Contour field - the house pattern. Concentric rounded rects radiating from a
  * node, always anchored so the outer rings bleed off-canvas.
  */
-export function contour({ cx = 100, cy = 0, rings = 9, gap = 9, rot = -12, stroke = 'currentColor', w = 1, opacity = 1, from = 8 } = {}) {
+/**
+ * Deterministic pseudo-noise - same input always produces the same wobble, so
+ * a re-render is pixel-identical. No Math.random() anywhere in this file.
+ */
+const noise1 = (seed) => {
+  const s = Math.sin(seed * 12.9898) * 43758.5453;
+  return s - Math.floor(s);
+};
+
+/**
+ * Channel lines - the house motif. NOT concentric rings: a set of wavy,
+ * unevenly-spaced bands, styled after the depth-contour lines on a nautical
+ * chart of a backwater channel. This is Onam Cloud's literal business model
+ * as a mark - a private channel, charted and surveyed, never the open sea.
+ * Every 3rd-4th line carries a short cross-tick, like a sounding mark.
+ */
+export function channelLines({ cx = 100, cy = 0, rings = 9, gap = 9, rot = -12, stroke = 'currentColor', w = 1, opacity = 1, from = 8 } = {}) {
   const paths = [];
+  const SPAN = 150; // half-width of each band, in the local (pre-rotate) frame
+  const STEPS = 14;
   for (let i = 0; i < rings; i++) {
-    const s = from + i * gap;
-    const r = Math.min(s * 0.42, 26);
-    // fade the outer rings so the field dissolves rather than stopping
-    const o = (1 - (i / rings) * 0.72).toFixed(3);
-    paths.push(
-      `<rect x="${(-s / 2).toFixed(2)}" y="${(-s / 2).toFixed(2)}" width="${s}" height="${s}" rx="${r.toFixed(2)}" fill="none" stroke="${stroke}" stroke-width="${w}" opacity="${o}"/>`
-    );
+    const y = from + i * gap;
+    const amp = gap * (0.3 + noise1(i * 3.1) * 0.22);
+    const freq = 1.6 + noise1(i * 5.7) * 1.1;
+    const phase = noise1(i * 2.3) * Math.PI * 2;
+    const pts = [];
+    for (let s = 0; s <= STEPS; s++) {
+      const t = s / STEPS;
+      const x = -SPAN + t * SPAN * 2;
+      const yy = y + Math.sin(t * Math.PI * freq + phase) * amp + Math.sin(t * Math.PI * freq * 2.3 + phase * 1.7) * amp * 0.32;
+      pts.push([x, yy]);
+    }
+    let d = `M ${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
+    for (let s = 1; s < pts.length; s++) {
+      const [px, py] = pts[s - 1];
+      const [x, yy] = pts[s];
+      const mx = (px + x) / 2, my = (py + yy) / 2;
+      d += ` Q ${px.toFixed(2)} ${py.toFixed(2)}, ${mx.toFixed(2)} ${my.toFixed(2)}`;
+    }
+    d += ` T ${pts[pts.length - 1][0].toFixed(2)} ${pts[pts.length - 1][1].toFixed(2)}`;
+    // fade the outer bands so the field dissolves rather than stopping
+    const o = (1 - (i / rings) * 0.74).toFixed(3);
+    paths.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${w}" opacity="${o}" stroke-linecap="round"/>`);
+    if (i % 3 === 1) {
+      const tickAt = 0.28 + noise1(i * 7.3) * 0.4;
+      const [tx, ty] = pts[Math.round(tickAt * STEPS)];
+      paths.push(`<line x1="${tx.toFixed(2)}" y1="${(ty - 1.6).toFixed(2)}" x2="${tx.toFixed(2)}" y2="${(ty + 1.6).toFixed(2)}" stroke="${stroke}" stroke-width="${w}" opacity="${o}"/>`);
+    }
   }
   return `<svg class="motif" viewBox="0 0 100 100" preserveAspectRatio="none" style="opacity:${opacity}" aria-hidden="true">
     <g transform="translate(${cx} ${cy}) rotate(${rot})">${paths.join('')}</g>
   </svg>`;
 }
 
-/** Sparse dot matrix with a few illuminated, connected nodes. */
-export function nodeGrid({ cols = 9, rows = 5, gap = 4.6, dot = 0.42, live = [[2, 1], [5, 2], [7, 4]], color = 'currentColor', accent = null, opacity = 0.5 } = {}) {
-  const dots = [];
-  const key = (c, r) => `${c},${r}`;
-  const liveSet = new Set(live.map(([c, r]) => key(c, r)));
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const on = liveSet.has(key(c, r));
-      dots.push(
-        `<circle cx="${(c * gap).toFixed(2)}" cy="${(r * gap).toFixed(2)}" r="${(on ? dot * 2 : dot).toFixed(2)}" fill="${on && accent ? accent : color}" opacity="${on ? 1 : 0.3}"/>`
-      );
+/**
+ * Waypoint route - a small number of deliberate markers connected by one
+ * routed line, like a shipping lane on a chart. Replaces the generic
+ * dot-matrix-plus-network-lines pattern with something sparser and more
+ * intentional: this is a specific path, not a diagram of "the network."
+ */
+export function waypoints({ cols = 9, rows = 5, gap = 4.6, dot = 0.42, live = [[2, 1], [5, 2], [7, 4]], color = 'currentColor', accent = null, opacity = 0.5 } = {}) {
+  const pts = live.map(([c, r]) => [c * gap, r * gap]);
+  const mainColor = accent || color;
+
+  // Route: straight segments with the corner slightly rounded, not a smoothed
+  // curve - a chart route is plotted in legs, not a spline.
+  let d = `M ${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
+  for (let i = 1; i < pts.length; i++) d += ` L ${pts[i][0].toFixed(2)} ${pts[i][1].toFixed(2)}`;
+
+  const parts = [`<path d="${d}" fill="none" stroke="${mainColor}" stroke-width="0.22" stroke-linejoin="round" opacity="0.6"/>`];
+
+  // Distance ticks along each leg, evenly spaced - like nautical mile marks.
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len, ny = dx / len; // unit normal, for perpendicular ticks
+    const n = Math.max(1, Math.round(len / (gap * 0.85)));
+    for (let k = 1; k < n; k++) {
+      const t = k / n;
+      const px = x1 + dx * t, py = y1 + dy * t;
+      parts.push(`<line x1="${(px - nx * 0.6).toFixed(2)}" y1="${(py - ny * 0.6).toFixed(2)}" x2="${(px + nx * 0.6).toFixed(2)}" y2="${(py + ny * 0.6).toFixed(2)}" stroke="${mainColor}" stroke-width="0.16" opacity="0.4"/>`);
     }
   }
-  const links = [];
-  for (let i = 0; i < live.length - 1; i++) {
-    const [c1, r1] = live[i];
-    const [c2, r2] = live[i + 1];
-    links.push(
-      `<line x1="${(c1 * gap).toFixed(2)}" y1="${(r1 * gap).toFixed(2)}" x2="${(c2 * gap).toFixed(2)}" y2="${(r2 * gap).toFixed(2)}" stroke="${accent || color}" stroke-width="0.18" opacity="0.55"/>`
+
+  // Waypoint markers: hollow diamonds (chart-marker convention), the first
+  // and last slightly larger to read as origin/destination.
+  pts.forEach(([x, y], i) => {
+    const end = i === 0 || i === pts.length - 1;
+    const r = dot * (end ? 2.6 : 1.9);
+    const fillOn = end;
+    parts.push(
+      `<path d="M ${x.toFixed(2)} ${(y - r).toFixed(2)} L ${(x + r).toFixed(2)} ${y.toFixed(2)} L ${x.toFixed(2)} ${(y + r).toFixed(2)} L ${(x - r).toFixed(2)} ${y.toFixed(2)} Z" ` +
+      `fill="${fillOn ? mainColor : 'none'}" stroke="${mainColor}" stroke-width="0.2" opacity="${end ? 1 : 0.85}"/>`
     );
-  }
-  const w = (cols - 1) * gap + dot * 4;
-  const h = (rows - 1) * gap + dot * 4;
-  return `<svg class="nodegrid" viewBox="${-dot * 2} ${-dot * 2} ${w} ${h}" style="opacity:${opacity}" aria-hidden="true">${links.join('')}${dots.join('')}</svg>`;
+  });
+
+  const w = cols * gap;
+  const h = rows * gap;
+  return `<svg class="nodegrid" viewBox="${-dot * 3} ${-dot * 3} ${w} ${h}" style="opacity:${opacity}" aria-hidden="true">${parts.join('')}</svg>`;
 }
+
+/**
+ * Coordinate mark - a small cartographic registration crosshair (survey-mark
+ * convention: a ring with a centred cross, tick to one side). A signature
+ * accent for corners and frame edges, used sparingly.
+ */
+export function coordMark({ size = '2.4rem', color = 'currentColor', opacity = 0.55 } = {}) {
+  return `<svg class="motif-wrap" style="width:${size};height:${size};opacity:${opacity}" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="7" fill="none" stroke="${color}" stroke-width="1.1"/>
+    <line x1="12" y1="0" x2="12" y2="6" stroke="${color}" stroke-width="1.1"/>
+    <line x1="12" y1="18" x2="12" y2="24" stroke="${color}" stroke-width="1.1"/>
+    <line x1="0" y1="12" x2="6" y2="12" stroke="${color}" stroke-width="1.1"/>
+    <line x1="18" y1="12" x2="24" y2="12" stroke="${color}" stroke-width="1.1"/>
+    <circle cx="12" cy="12" r="1.1" fill="${color}"/>
+  </svg>`;
+}
+
+// Old names, kept as aliases so nothing else in this file or the platform
+// templates needs to change - they now draw the channel/waypoint motifs above.
+export const contour = channelLines;
+export const nodeGrid = waypoints;
 
 /**
  * Onam Cloud mark - aperture square (one corner squared) holding concentric
@@ -168,7 +264,7 @@ export const swipe = (label = 'Swipe') =>
 /** Big number with the unit kept optically subordinate. */
 export function stat({ value, unit = '', caption = '', tone = 'dark' }) {
   return `<div class="stat ${tone === 'dark' ? 'on-dark-type' : ''}">
-    <div class="stat-fig">${esc(value)}${unit ? `<span class="stat-unit">${esc(unit)}</span>` : ''}</div>
+    <div class="stat-fig">${escDisplay(value)}${unit ? `<span class="stat-unit">${esc(unit)}</span>` : ''}</div>
     ${caption ? `<p class="stat-cap">${esc(caption)}</p>` : ''}
   </div>`;
 }
@@ -184,7 +280,12 @@ export function baseCSS(pal) {
   --ink:${pal.ink}; --ink2:${pal.ink2}; --ink3:${pal.ink3};
   --paper:${pal.paper}; --paper2:${pal.paper2}; --mist:${pal.mist};
   --a1:${pal.a1}; --a2:${pal.a2}; --aInk:${pal.aInk}; --on-accent:${pal.onAccent};
-  --display:${tokens.type.display}; --body:${tokens.type.body};
+  --display:${tokens.type.display}; --body:${tokens.type.body}; --mono:${tokens.type.mono};
+  /* Fraunces is variable (opsz 9-144, wght, SOFT, WONK). Three named instances,
+     never a fourth - see brand/onam-cloud.tokens.json -> type.rules. */
+  --fvs-display:'opsz' 144,'SOFT' 0,'WONK' 0;      /* headlines, big numerals - sharp, confident */
+  --fvs-logo:'opsz' 26,'SOFT' 0,'WONK' 0;           /* wordmark at small sizes - sturdier stroke contrast */
+  --fvs-editorial:'opsz' 56,'SOFT' 32,'WONK' 1;     /* italic pull-quotes only - warmer, slightly hand-set */
   --cut:${tokens.geometry.cutAngle};
   --r-sm:${tokens.geometry.radius.sm}; --r-md:${tokens.geometry.radius.md}; --r-lg:${tokens.geometry.radius.lg};
   --hair:${tokens.geometry.hairline};
@@ -226,18 +327,28 @@ body{font-family:var(--body);-webkit-font-smoothing:antialiased;text-rendering:g
 .nodegrid{display:block;width:100%;height:auto}
 
 /* ---- type ---- */
-.eyebrow{font-family:var(--body);font-weight:600;font-size:1.35rem;letter-spacing:.16em;
+.eyebrow{font-family:var(--mono);font-weight:500;font-size:1.3rem;letter-spacing:.14em;
    text-transform:uppercase;color:var(--a2);display:flex;align-items:center;gap:.9rem;line-height:1}
 .eyebrow i{display:block;width:2.6rem;height:var(--hair);background:currentColor;flex:none}
 .field-accent .eyebrow,.field-paper .eyebrow{color:inherit;opacity:.72}
 
-h1,.h1{font-family:var(--display);font-weight:700;letter-spacing:-.033em;line-height:1.06;
-   font-size:var(--h1, 7.4rem);text-wrap:balance}
-h2,.h2{font-family:var(--display);font-weight:700;letter-spacing:-.028em;line-height:1.08;font-size:var(--h2, 5.2rem);text-wrap:balance}
-.lede{font-size:var(--lede, 2.05rem);line-height:1.45;color:var(--mist);max-width:30ch;font-weight:400}
+h1,.h1{font-family:var(--display);font-variation-settings:var(--fvs-display);font-weight:700;
+   letter-spacing:-.018em;line-height:1.04;font-size:var(--h1, 7.4rem);text-wrap:balance}
+h2,.h2{font-family:var(--display);font-variation-settings:var(--fvs-display);font-weight:700;
+   letter-spacing:-.015em;line-height:1.08;font-size:var(--h2, 5.2rem);text-wrap:balance}
+.lede{font-size:var(--lede, 2.05rem);line-height:1.48;color:var(--mist);max-width:30ch;font-weight:400}
 .field-paper .lede{color:${hexA(pal.ink, 0.66)}}
 .field-accent .lede{color:${hexA(pal.aInk, 0.78)}}
 .body{font-size:1.75rem;line-height:1.55}
+
+/* Editorial italic - pull-quotes only, never a headline. A different optical
+   cut of the same variable face reads as a deliberate second voice, not a
+   second typeface - warmer and slightly hand-set against the sharp display cut. */
+.editorial{font-family:var(--display);font-style:italic;font-weight:500;
+   font-variation-settings:var(--fvs-editorial);letter-spacing:-.005em;text-wrap:balance}
+
+/* A source, caption or technical label - always mono, never body. */
+.spec{font-family:var(--mono);letter-spacing:.02em;font-variant-numeric:tabular-nums}
 
 .mark{font-style:normal;position:relative;display:inline;
    background-image:var(--grad);background-repeat:no-repeat;
@@ -248,7 +359,11 @@ h2,.h2{font-family:var(--display);font-weight:700;letter-spacing:-.028em;line-he
    text-decoration-thickness:.055em;text-underline-offset:.16em;text-decoration-color:var(--a2)}
 .field-paper .mark-wrapped{text-decoration-color:var(--a1)}
 .field-accent .mark-wrapped{text-decoration-color:currentColor}
-.accent-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.accent-text{font-family:var(--display);font-variation-settings:var(--fvs-display);font-weight:700;
+   background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Applied to every digit run by escDisplay() - see its comment above esc(). */
+.num{letter-spacing:.055em}
 
 .rule{height:.36rem;width:9rem;background:var(--grad);border-radius:999rem;flex:none}
 .rule.hair{height:var(--hair);width:100%;background:currentColor;opacity:.18;border-radius:0}
@@ -257,7 +372,8 @@ h2,.h2{font-family:var(--display);font-weight:700;letter-spacing:-.028em;line-he
 .logo{display:flex;align-items:center;gap:1.1rem;flex:none}
 .mark-slot{display:block;flex:none}
 .mark-slot svg,.mark-slot img{width:100%;height:100%;display:block;object-fit:contain}
-.logo-word{font-family:var(--display);font-weight:700;font-size:2.15rem;letter-spacing:-.02em;color:var(--paper)}
+.logo-word{font-family:var(--display);font-variation-settings:var(--fvs-logo);font-weight:700;
+   font-size:2.15rem;letter-spacing:-.01em;color:var(--paper)}
 .on-dark-type .logo-word,.field-accent .logo-word,.field-paper .logo-word{color:currentColor}
 
 .ab-foot{display:flex;align-items:center;justify-content:space-between;gap:2rem;
@@ -271,7 +387,8 @@ h2,.h2{font-family:var(--display);font-weight:700;letter-spacing:-.028em;line-he
    background:var(--ink3);position:relative;flex:none}
 .aperture img{width:100%;height:100%;object-fit:cover;display:block}
 .avatar-initials{display:flex;align-items:center;justify-content:center;background:var(--grad);
-   color:var(--on-accent);font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1}
+   color:var(--on-accent);font-family:var(--display);font-variation-settings:var(--fvs-logo);
+   font-weight:700;letter-spacing:-.01em;line-height:1}
 .field-accent .avatar-initials{background:var(--aInk);color:var(--paper)}
 
 .chip{display:inline-flex;align-items:center;gap:.7rem;padding:.75rem 1.6rem;border-radius:999rem;
@@ -281,9 +398,17 @@ h2,.h2{font-family:var(--display);font-weight:700;letter-spacing:-.028em;line-he
 .field-accent .chip{border-color:${hexA(pal.aInk, 0.32)};color:${hexA(pal.aInk, 0.82)};background:${hexA(pal.aInk, 0.06)}}
 
 /* ---- stat ---- */
-.stat-fig{font-family:var(--display);font-weight:700;font-size:var(--fig, 16rem);line-height:.86;
-   letter-spacing:-.05em;display:flex;align-items:flex-start;gap:.4rem}
-.stat-unit{font-size:.34em;line-height:1;margin-top:.18em;font-weight:500;letter-spacing:-.01em;opacity:.75}
+/* The single most decorative type moment in the system. The value text arrives
+   through esc(), which already wraps it in .num for the "4"-collision fix
+   above - that inner span governs the digit tracking here, not this rule
+   (letter-spacing on a flex container doesn't reach across a child boundary
+   to the separate .stat-unit span anyway, so setting it here would be a dead
+   declaration lying about what's doing the work). */
+.stat-fig{font-family:var(--display);font-variation-settings:var(--fvs-display);font-weight:700;
+   font-size:var(--fig, 16rem);line-height:.84;
+   display:flex;align-items:flex-start;gap:.4rem;font-variant-numeric:tabular-nums}
+.stat-unit{font-family:var(--mono);font-size:.3em;line-height:1;margin-top:.42em;
+   font-weight:500;letter-spacing:0;opacity:.75}
 .stat-cap{font-size:1.9rem;line-height:1.4;margin-top:1.6rem;max-width:32ch;opacity:.8;text-wrap:pretty}
 
 /* ---- carousel ---- */
@@ -336,9 +461,20 @@ export const FIT_SCRIPT = `(function(){
       function over(){
         // Measure against the ARTBOARD, not the pad: a flex pad can itself grow
         // past the board, which makes its own content box look roomy.
+        //
+        // Tolerance is proportional to canvas height, not a flat 1px: a display
+        // face's line box (its internal ascent/descent) routinely sits a little
+        // outside a razor-exact content-box edge - normal typographic leading,
+        // invisible to the eye - and Fraunces's is noticeably taller than the
+        // old geometric sans this was tuned against. A hairline check like that
+        // reads a purely cosmetic few px as "overflowing" and can shrink a short
+        // headline to a fraction of its size chasing a collision that was never
+        // visible. Real overflow is a full line spilling into a neighbour, on
+        // the order of tens of px at minimum - this tolerance is well under that.
         var ar = ab.getBoundingClientRect(), ps = getComputedStyle(pad);
-        var top = ar.top + parseFloat(ps.paddingTop) - 1;
-        var bottom = ar.bottom - parseFloat(ps.paddingBottom) + 1;
+        var tol = ar.height * 0.012;
+        var top = ar.top + parseFloat(ps.paddingTop) - tol;
+        var bottom = ar.bottom - parseFloat(ps.paddingBottom) + tol;
         var kids = pad.querySelectorAll('*');
         for (var i = 0; i < kids.length; i++) {
           var kr = kids[i].getBoundingClientRect();
@@ -347,15 +483,17 @@ export const FIT_SCRIPT = `(function(){
         }
         // A .stack that overflows its own track spills over its siblings while
         // staying inside the pad - the headline lands on top of the logo. Only
-        // the stack's own children reveal it.
+        // the stack's own children reveal it. Same tolerance logic, scaled to
+        // the stack's own box.
         var stacks = pad.querySelectorAll('.stack');
         for (var s = 0; s < stacks.length; s++) {
           var sr = stacks[s].getBoundingClientRect();
+          var stol = Math.max(sr.height * 0.012, tol);
           var ch = stacks[s].children;
           for (var c = 0; c < ch.length; c++) {
             var cr = ch[c].getBoundingClientRect();
             if (!cr.height && !cr.width) continue;
-            if (cr.top < sr.top - 1 || cr.bottom > sr.bottom + 1) return true;
+            if (cr.top < sr.top - stol || cr.bottom > sr.bottom + stol) return true;
           }
         }
         return pad.scrollWidth > pad.clientWidth + 1;

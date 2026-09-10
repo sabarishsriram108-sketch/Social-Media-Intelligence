@@ -52,16 +52,18 @@
     }
   },
   "type": {
-    "display": "'Space Grotesk', 'DejaVu Sans', sans-serif",
-    "body": "'Inter', 'DejaVu Sans', sans-serif",
+    "display": "'Fraunces', 'DejaVu Serif', Georgia, serif",
+    "body": "'IBM Plex Sans', 'DejaVu Sans', sans-serif",
+    "mono": "'IBM Plex Mono', 'DejaVu Sans Mono', monospace",
     "scale": {
       "ratio": 1.25,
       "baseIsPercentOfCanvasWidth": 1
     },
     "rules": [
-      "Display face carries headlines only. Never set body copy in Space Grotesk.",
-      "Headline tracking is negative (-0.03em) at large sizes, neutral below 3rem.",
-      "Eyebrow / kicker text is uppercase Inter 600 at 0.16em tracking.",
+      "Three voices, each with one job. Fraunces (a variable serif) carries headlines and nothing else - never body copy. IBM Plex Sans is every standfirst, byline and body line. IBM Plex Mono is reserved for eyebrows, sources, captions, stat units and anything that reads as a spec or a citation.",
+      "Fraunces headlines run sharp: font-variation-settings 'opsz' 144, 'SOFT' 0, 'WONK' 0, weight 700 (600 for a slightly quieter register, 900 only for the single-figure DATA archetype). The editorial italic accent (pull-quotes only) inverts this: opsz 40, SOFT 40, WONK 1 - warm and slightly hand-set, never used for a headline.",
+      "Headline tracking is negative (-0.015em at display size, tightening slightly further above 6rem) - Fraunces is wide enough at high opsz that it never needs loosening.",
+      "Eyebrows, sources and stat units are IBM Plex Mono 500 at 0.14em tracking, uppercase where they are eyebrows, sentence case where they are a citation.",
       "Never more than 3 type sizes on one artboard."
     ]
   },

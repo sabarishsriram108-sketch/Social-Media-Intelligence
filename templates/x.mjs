@@ -50,7 +50,7 @@ function metric(p, pal) {
           <div style="margin-top:1.6rem">${stat({ value: p.value, unit: p.unit, caption: p.caption, tone: 'dark' })}</div>
         </div>
         <div style="padding-top:2.4rem">
-          ${p.source ? `<p style="font-size:1.2rem;opacity:.6;margin-bottom:1.2rem">${esc(p.source)}</p>` : ''}
+          ${p.source ? `<p class="spec" style="font-size:1.1rem;opacity:.6;margin-bottom:1.2rem">${esc(p.source)}</p>` : ''}
           ${footer({ handle: p.brand.handle, site: p.brand.site, tone: 'dark' })}
         </div>
       </div>

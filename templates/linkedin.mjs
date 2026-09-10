@@ -6,7 +6,7 @@
  * named human go up. 4:5 (1200x1500) is deliberate - it takes the most vertical
  * feed real estate LinkedIn will give a single image.
  */
-import { esc, emphasise, contour, nodeGrid, logo, eyebrow, footer, stat, swipe, hexA, avatar } from './_kit.mjs';
+import { esc, escDisplay, emphasise, contour, nodeGrid, logo, eyebrow, footer, stat, swipe, hexA, avatar } from './_kit.mjs';
 
 export const platform = 'linkedin';
 export const meta = {
@@ -73,7 +73,7 @@ function evidence(p, pal) {
       </div>` : ''}
       </div>
       <div style="padding-top:3rem">
-        ${p.source ? `<p style="font-size:1.25rem;opacity:.5;margin-bottom:1.6rem;letter-spacing:.03em">${esc(p.source)}</p>` : ''}
+        ${p.source ? `<p class="spec" style="font-size:1.15rem;opacity:.55;margin-bottom:1.6rem">${esc(p.source)}</p>` : ''}
         ${footer({ handle: p.brand.handle, site: p.brand.site })}
       </div>
     </div>
@@ -91,9 +91,9 @@ function quote(p, pal) {
       <div style="height:64%;display:flex;flex-direction:column">
         ${logo({ name: p.brand.name, logoSvg: p.brand.logoSvg })}
         <div class="stack low">
-          <div style="font-family:var(--display);font-weight:700;font-size:9rem;line-height:.5;
-               color:var(--a2);opacity:.42;margin-bottom:2.6rem">&ldquo;</div>
-          <h2 style="max-width:22ch">${esc(p.quote || p.headline)}</h2>
+          <div class="editorial" style="font-size:9rem;line-height:.5;
+               color:var(--a2);opacity:.5;margin-bottom:2.8rem">&ldquo;</div>
+          <p class="editorial" style="font-size:var(--h2, 4.8rem);line-height:1.1;max-width:20ch">${escDisplay(p.quote || p.headline)}</p>
         </div>
       </div>
       <div style="flex:1;display:flex;align-items:center;position:relative;z-index:10;color:var(--aInk)">
@@ -146,14 +146,16 @@ function carousel(p, pal) {
             ${logo({ name: p.brand.name, tone: 'dark', size: '2.5rem', logoSvg: p.brand.logoSvg })}
             <span style="font-size:1.35rem;font-weight:600;opacity:.45">${i + 2} / ${n}</span>
           </div>
-          <div class="stack low">
-            <span class="accent-text" style="font-family:var(--display);font-weight:700;font-size:5.4rem;letter-spacing:-.04em;line-height:1">${String(i + 1).padStart(2, '0')}</span>
-            <h2 style="margin-top:1.6rem">${esc(s.title)}</h2>
+          <!-- Centred, not bottom-anchored: a short slide otherwise strands a
+               large empty gap above the whole numeral+title+body block. -->
+          <div class="stack">
+            <span class="accent-text" style="font-size:5.4rem;letter-spacing:-.04em;line-height:1">${escDisplay(String(i + 1).padStart(2, '0'))}</span>
+            <h2 style="margin-top:1.6rem">${escDisplay(s.title)}</h2>
             ${s.body ? `<p class="body" style="margin-top:2.4rem;max-width:34ch;opacity:.72">${esc(s.body)}</p>` : ''}
             ${s.stat ? `<div style="margin-top:3rem;display:inline-flex;align-items:baseline;gap:1.2rem;
                 padding:1.4rem 2.4rem;border-radius:var(--r-sm);background:${hexA(pal.ink, 0.05)};border-left:.35rem solid var(--a1)">
-                <span style="font-family:var(--display);font-weight:700;font-size:3.4rem;letter-spacing:-.03em">${esc(s.stat)}</span>
-                ${s.statLabel ? `<span style="font-size:1.5rem;opacity:.65">${esc(s.statLabel)}</span>` : ''}
+                <span class="accent-text" style="font-size:3.4rem;letter-spacing:-.03em">${escDisplay(s.stat)}</span>
+                ${s.statLabel ? `<span class="spec" style="font-size:1.35rem;opacity:.65">${esc(s.statLabel)}</span>` : ''}
               </div>` : ''}
           </div>
           <div style="padding-top:3rem"><div class="rule" style="width:5rem"></div></div>
@@ -171,7 +173,7 @@ function carousel(p, pal) {
         ${logo({ name: p.brand.name, tone: 'dark', logoSvg: p.brand.logoSvg })}
         <div style="margin-top:auto">
           ${eyebrow(cta.eyebrow || 'Next step')}
-          <h2 style="margin-top:2.2rem;max-width:18ch">${esc(cta.headline || 'Talk to our cloud team.')}</h2>
+          <h2 style="margin-top:2.2rem;max-width:18ch">${escDisplay(cta.headline || 'Talk to our cloud team.')}</h2>
           ${cta.action ? `<div style="margin-top:3.2rem;display:inline-flex;padding:1.5rem 3rem;border-radius:999rem;
              background:var(--aInk);color:var(--paper);font-size:1.7rem;font-weight:700">${esc(cta.action)}</div>` : ''}
         </div>
