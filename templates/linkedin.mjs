@@ -7,6 +7,7 @@
  * feed real estate LinkedIn will give a single image.
  */
 import { esc, escDisplay, emphasise, contour, nodeGrid, logo, eyebrow, footer, stat, swipe, hexA, avatar } from './_kit.mjs';
+import { iconOrg, iconBypassPublic, iconExchange } from './icons.mjs';
 
 export const platform = 'linkedin';
 export const meta = {
@@ -104,6 +105,69 @@ function quote(p, pal) {
             <p style="font-size:1.45rem;margin-top:.4rem;font-weight:500;opacity:.72">${esc(a.role || '')}</p>
           </div>
         </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ------------------------------------------------------------------ explainer */
+/**
+ * The flagship infographic: the private-link path drawn as a diagram, not
+ * described in a sentence. This is Onam Cloud's entire pitch made visible -
+ * a business reaches every major cloud through one private edge, never the
+ * open internet - and it is the single most useful artboard in the system
+ * for a CIO audience that wants to see the architecture, not just hear about it.
+ */
+function explainer(p, pal) {
+  const origin = p.origin || 'Your business';
+  const providers = (p.providers && p.providers.length ? p.providers : ['Azure', 'AWS', 'Google Cloud']).slice(0, 4);
+  const node = (label, sub, { big = false } = {}) => `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:1.3rem;position:relative;z-index:10">
+      <div class="icon-tile" style="width:${big ? '8.2rem' : '6rem'};height:${big ? '8.2rem' : '6rem'};
+           color:${big ? 'var(--aInk)' : 'var(--a1)'};background:${big ? 'var(--grad)' : hexA(pal.ink, 0.07)}">
+        ${big ? iconExchange({ size: '54%' }) : iconOrg({ size: '54%' })}
+      </div>
+      <div style="text-align:center">
+        <p style="font-size:${big ? '2.3rem' : '1.85rem'};font-weight:700">${esc(label)}</p>
+        ${sub ? `<p class="spec" style="font-size:1.3rem;opacity:.55;margin-top:.4rem">${esc(sub)}</p>` : ''}
+      </div>
+    </div>`;
+  const wire = (h = '4.2rem') => `<div style="width:${(pal.hair || '.09rem')};min-height:${h};background:${hexA(pal.ink, 0.2)};position:relative;z-index:5"></div>`;
+  const annot = (iconSvg, text) => `
+    <div style="display:flex;align-items:center;gap:.9rem;padding:.8rem 1.7rem;border-radius:999rem;
+         background:${hexA(pal.ink, 0.05)};color:${hexA(pal.ink, 0.6)};position:relative;z-index:10">
+      <span style="width:1.8rem;height:1.8rem;flex:none">${iconSvg}</span>
+      <span class="spec" style="font-size:1.3rem">${esc(text)}</span>
+    </div>`;
+
+  return `<div class="ab field-paper" style="--h2:4rem">
+    <div class="motif-wrap" style="left:0;top:0;width:100%;height:1.6%;background:var(--grad)"></div>
+    <div class="motif-wrap" style="right:6%;top:8%;width:20%;color:${hexA(pal.ink, 0.5)}">
+      ${nodeGrid({ cols: 6, rows: 4, accent: pal.a1, opacity: 0.5, live: [[1, 1], [4, 2]] })}
+    </div>
+    <div class="pad" style="--pad:8%">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        ${logo({ name: p.brand.name, tone: 'dark', logoSvg: p.brand.logoSvg })}
+        ${p.tag ? `<span class="chip">${esc(p.tag)}</span>` : ''}
+      </div>
+      <div style="margin-top:2.6rem">
+        ${eyebrow(p.eyebrow || 'How it works')}
+        <h2 style="margin-top:1.6rem;max-width:18ch">${emphasise(p.headline || 'One private channel. Every major cloud.', p.emphasise ?? 2)}</h2>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;margin-top:1rem">
+        ${node(origin)}
+        ${wire()}
+        ${annot(iconBypassPublic({ size: '100%' }), 'Bypasses the public internet')}
+        ${wire()}
+        ${node('Onam Cloud', 'Private edge · Equinix', { big: true })}
+        ${wire()}
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:10">
+          ${providers.map((name) => `<span class="chip" style="border-color:${hexA(pal.ink, 0.18)};color:${hexA(pal.ink, 0.72)};background:transparent">${esc(name)}</span>`).join('')}
+        </div>
+      </div>
+      <div style="padding-top:2.6rem">
+        <div class="rule hair" style="margin-bottom:2.2rem"></div>
+        ${footer({ handle: p.brand.handle, site: p.brand.site })}
       </div>
     </div>
   </div>`;
@@ -213,6 +277,7 @@ export const artboards = {
   'post':        { ...POST, label: 'Feed post - POV / authority (ink)',  render: (p, pal) => [{ ...POST, body: post(p, pal) }] },
   'evidence':    { ...POST, label: 'Feed post - evidence / metric (paper)', render: (p, pal) => [{ ...POST, body: evidence(p, pal) }] },
   'quote':       { ...POST, label: 'Feed post - executive quote (ink + cut)', render: (p, pal) => [{ ...POST, body: quote(p, pal) }] },
+  'explainer':   { ...POST, label: 'How it works - the private-link path as a diagram', render: (p, pal) => [{ ...POST, body: explainer(p, pal) }] },
   'carousel':    { ...POST, label: 'Document carousel (cover + body + CTA)', multi: true, render: carousel },
   'page-banner': { w: 1128, h: 191, label: 'Company page banner',
                    render: (p, pal) => [{ w: 1128, h: 191, body: banner(p, pal, { w: 1128, h: 191 }) }] },

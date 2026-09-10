@@ -382,10 +382,23 @@ h2,.h2{font-family:var(--display);font-variation-settings:var(--fvs-display);fon
 .field-accent .ab-foot{color:${hexA(pal.aInk, 0.62)}}
 .ab-foot .site{font-weight:600;color:var(--a2)}
 .field-paper .ab-foot .site,.field-accent .ab-foot .site{color:inherit;opacity:.9}
+/* tone:'dark' on footer() - used when the footer sits on an accent-coloured
+   surface inside an otherwise ink/paper artboard (e.g. below the diagonal
+   cut). Without this, .ab-foot's default mist grey and .site's orange both
+   sit near-invisible on the accent field they were placed over. */
+.ab-foot.on-dark-type{color:${hexA(pal.aInk, 0.62)}}
+.ab-foot.on-dark-type .site{color:inherit;opacity:.9}
 
 .aperture{border-radius:var(--r-md);border-top-left-radius:0;overflow:hidden;
    background:var(--ink3);position:relative;flex:none}
 .aperture img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Icon chip - the aperture's squared-corner signature, sized down. Default
+   background is a soft accent tint; pass bg:'transparent' for a bare icon. */
+.icon-tile{border-radius:var(--r-sm);border-top-left-radius:0;flex:none;
+   display:flex;align-items:center;justify-content:center;
+   background:${hexA(pal.a1, 0.12)}}
+.icon-tile .icon{width:100%;height:100%}
 .avatar-initials{display:flex;align-items:center;justify-content:center;background:var(--grad);
    color:var(--on-accent);font-family:var(--display);font-variation-settings:var(--fvs-logo);
    font-weight:700;letter-spacing:-.01em;line-height:1}
@@ -433,6 +446,67 @@ export function hexA(hex, a) {
   const h = hex.replace('#', '');
   const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+}
+
+/** #rrggbb -> [r,g,b] as 0-1 fractions, for SVG feFuncR/G/B table values. */
+function hex01(hex) {
+  const h = hex.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
+let duotoneSeq = 0;
+
+/**
+ * Photography treatment, part 1: duotone().
+ *
+ * Onam Cloud has no photo library yet, and stock photography dropped onto an
+ * artboard at native colour breaks the orange/black/white rule on contact.
+ * This is the fix for the day a real photo exists: crush it to luminance,
+ * then remap that luminance onto exactly two brand tones via an SVG
+ * feComponentTransfer table - true photographic duotone (shadows -> dark
+ * tone, highlights -> light tone), not a tint or a translucent colour wash.
+ * `filter:url(#id)` is a real SVG filter, so it rasterises correctly through
+ * Playwright same as any other CSS. Absolutely positioned - fills whatever
+ * container establishes `position:relative` around it.
+ */
+export function duotone(src, { pal, shadow = null, highlight = null, alt = '', fit = 'cover' } = {}) {
+  const id = `duo-${++duotoneSeq}`;
+  const [dr, dg, db] = hex01(shadow || pal.ink);
+  const [lr, lg, lb] = hex01(highlight || pal.a2);
+  return `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="${id}">
+      <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0"/>
+      <feComponentTransfer color-interpolation-filters="sRGB">
+        <feFuncR type="table" tableValues="${dr.toFixed(3)} ${lr.toFixed(3)}"/>
+        <feFuncG type="table" tableValues="${dg.toFixed(3)} ${lg.toFixed(3)}"/>
+        <feFuncB type="table" tableValues="${db.toFixed(3)} ${lb.toFixed(3)}"/>
+      </feComponentTransfer>
+    </filter></defs></svg>
+    <img src="${esc(src)}" alt="${esc(alt)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:${fit};filter:url(#${id}) contrast(1.05)"/>`;
+}
+
+/**
+ * Photography treatment, part 2: heroArt().
+ *
+ * What stands in a photo's place until one exists. Not a texture or a
+ * gradient - a full-bleed generative field built from the same channel-line
+ * language as the rest of the system (three layered passes at different
+ * scale/rotation/opacity, so it has real depth rather than reading as one
+ * repeated motif), so an artboard with no photography still reads as
+ * designed, not empty. Deterministic: a given seed always renders identical,
+ * same as channelLines(). Drop it into any image slot as `background`.
+ */
+export function heroArt({ pal, seed = 1, tone = 'ink' } = {}) {
+  const bg = tone === 'ink'
+    ? `radial-gradient(120% 90% at 78% 8%, ${hexA(pal.a1, 0.35)} 0%, transparent 55%), linear-gradient(165deg, ${pal.ink2} 0%, ${pal.ink} 70%)`
+    : `linear-gradient(165deg, #fff 0%, ${pal.paper2} 100%)`;
+  const lineColor = tone === 'ink' ? pal.a2 : pal.ink;
+  const layers = [
+    channelLines({ cx: 10 + seed * 7, cy: -8, rot: -14, rings: 16, gap: 6.4, from: 4, stroke: lineColor, w: 0.22, opacity: tone === 'ink' ? 0.5 : 0.28 }),
+    channelLines({ cx: 120 - seed * 5, cy: 60, rot: -10, rings: 12, gap: 9, from: 6, stroke: lineColor, w: 0.3, opacity: tone === 'ink' ? 0.28 : 0.16 }),
+    channelLines({ cx: 40, cy: 118, rot: -16, rings: 10, gap: 8, from: 4, stroke: pal.a1, w: 0.26, opacity: 0.22 }),
+  ];
+  return `<div class="hero-art" style="position:absolute;inset:0;overflow:hidden;background:${bg}">${layers.join('')}</div>`;
 }
 
 /**

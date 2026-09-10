@@ -9,7 +9,8 @@
   --black:#0B0B0D; --surface:#141416; --surface2:#1C1C1F; --line:#2A2A2E; --line2:#3A3A40;
   --white:#FFFFFF; --dim:#9A99A0; --dim2:#6E6D74;
   --o1:#FF6A00; --o2:#FFA23C; --grad:linear-gradient(115deg,var(--o1),var(--o2));
-  --display:'Space Grotesk',system-ui,sans-serif; --body:'Inter',system-ui,-apple-system,sans-serif;
+  --display:'Fraunces','DejaVu Serif',Georgia,serif; --body:'IBM Plex Sans','DejaVu Sans',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono','DejaVu Sans Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--black);color:var(--white);font-family:var(--body);font-size:15px;line-height:1.55}
@@ -41,7 +42,7 @@ header{border-bottom:1px solid var(--line);background:rgba(11,11,13,.92);backdro
 /* ---- steps ---- */
 section{padding-top:34px}
 .steplab{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.stepnum{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.1em;
+.stepnum{font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.1em;
   color:var(--black);background:var(--grad);padding:3px 9px;border-radius:4px;flex:none}
 .steplab h2{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.02em}
 .steplab .sub{color:var(--dim2);font-size:13.5px;margin-left:auto;text-align:right}

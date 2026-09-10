@@ -7,7 +7,7 @@
  * a fixed subject aperture on the right third. Run `--legibility` on any render
  * to see the 210px proof next to the full-size artboard.
  */
-import { esc, emphasise, contour, nodeGrid, logo, eyebrow, footer, hexA } from './_kit.mjs';
+import { esc, emphasise, contour, nodeGrid, logo, eyebrow, footer, hexA, duotone, heroArt } from './_kit.mjs';
 
 export const platform = 'youtube';
 export const meta = {
@@ -35,11 +35,12 @@ function thumbnail(p, pal) {
     ${contour({ cx: 100, cy: 6, rings: 9, gap: 9.5, from: 14, opacity: 0.28, w: 0.3 })}
     <div class="motif-wrap" style="inset:0;
          background:radial-gradient(58% 86% at 96% 18%, ${hexA(pal.a1, 0.38)} 0%, ${hexA(pal.a2, 0.12)} 46%, transparent 72%)"></div>
-    ${p.subject ? `<div class="aperture" style="position:absolute;z-index:8;right:4%;top:10%;width:32%;height:80%">
-        <img src="${esc(p.subject)}" alt="">
-      </div>` : `<div class="motif-wrap" style="right:9%;top:26%;width:22%;color:${hexA(pal.paper, 0.6)}">
-        ${nodeGrid({ cols: 6, rows: 5, gap: 5, accent: pal.a2, opacity: 0.7 })}
-      </div>`}
+    <!-- A real subject photo gets the duotone treatment (never native colour,
+         so it can't break the orange/black/white rule); with none supplied,
+         heroArt() fills the same aperture instead of leaving it empty. -->
+    <div class="aperture" style="position:absolute;z-index:8;right:4%;top:10%;width:32%;height:80%">
+      ${p.subject ? duotone(p.subject, { pal, alt: '' }) : heroArt({ pal, seed: (p.headline || '').length || 3, tone: 'ink' })}
+    </div>
     <!-- Scrim keeps the headline readable even when a photo subject is dropped in. -->
     <div class="motif-wrap" style="left:0;top:0;width:100%;height:100%;z-index:9;
          background:linear-gradient(90deg, ${hexA(pal.ink, 0.94)} 0%, ${hexA(pal.ink, 0.88)} 38%, ${hexA(pal.ink, 0.45)} 60%, transparent 78%)"></div>

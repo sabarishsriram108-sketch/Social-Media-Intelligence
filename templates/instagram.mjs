@@ -125,16 +125,16 @@ function carousel(p, pal) {
       body: `<div class="ab field-paper" style="--h2:4.8rem">
         <div class="motif-wrap" style="left:0;top:0;width:100%;height:2.2%;background:var(--grad)"></div>
         <div class="pad" style="--pad:9%">
-          <div style="display:flex;align-items:center;gap:2rem">
-            <span class="accent-text" style="font-size:6.4rem;line-height:1;letter-spacing:-.04em">${escDisplay(String(i + 1).padStart(2, '0'))}</span>
-            <div class="rule" style="width:6rem"></div>
-          </div>
-          <!-- Centred, not bottom-anchored: this stack already has a strong top
-               anchor (the numeral), so a short title+body bottom-anchoring here
-               would strand a large empty gap between the two instead of reading
-               as one composed slide. -->
+          <!-- Numeral lives inside the stack, not above it: the whole
+               numeral+title+body composes and centres as one unit, so the
+               numeral never reads as a disconnected header floating over a
+               separately-centred text block. -->
           <div class="stack">
-            <h2>${escDisplay(s.title)}</h2>
+            <div style="display:flex;align-items:center;gap:2rem">
+              <span class="accent-text" style="font-size:6.4rem;line-height:1;letter-spacing:-.04em">${escDisplay(String(i + 1).padStart(2, '0'))}</span>
+              <div class="rule" style="width:6rem"></div>
+            </div>
+            <h2 style="margin-top:2.8rem">${escDisplay(s.title)}</h2>
             ${s.body ? `<p class="body" style="margin-top:2.6rem;max-width:32ch;opacity:.72">${esc(s.body)}</p>` : ''}
           </div>
           <div style="padding-top:3.4rem;display:flex;align-items:center;justify-content:space-between">

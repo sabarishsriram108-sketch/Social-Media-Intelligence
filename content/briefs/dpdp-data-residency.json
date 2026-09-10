@@ -138,6 +138,16 @@
     },
     {
       "platform": "linkedin",
+      "artboard": "explainer",
+      "eyebrow": "How it works",
+      "headline": "One private channel. Every major cloud.",
+      "emphasise": 2,
+      "tag": "Architecture",
+      "origin": "Your business",
+      "providers": ["Azure", "AWS", "Google Cloud"]
+    },
+    {
+      "platform": "linkedin",
       "artboard": "carousel",
       "eyebrow": "Board briefing",
       "headline": "What DPDP costs you, by the quarter you start.",
