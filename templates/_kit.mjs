@@ -1,5 +1,5 @@
 /**
- * Onum Cloud - design kit.
+ * Onam Cloud - design kit.
  * Shared visual language for every artboard: tokens -> CSS, motif geometry, and
  * the layout primitives ("surfaces") that the platform templates compose.
  *
@@ -8,7 +8,7 @@
  * across a 1080px Instagram post and a 2560px YouTube banner with no per-size CSS.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -16,8 +16,19 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 export const ROOT = join(HERE, '..');
 
 export const tokens = JSON.parse(
-  readFileSync(join(ROOT, 'brand', 'onum-cloud.tokens.json'), 'utf8')
+  readFileSync(join(ROOT, 'brand', 'onam-cloud.tokens.json'), 'utf8')
 );
+
+/**
+ * Real Onam Cloud mark, if one has been dropped in.
+ * Save the logo from onamcloud.com as `brand/logo.svg` and every artboard picks
+ * it up on the next render - no template edits. Until then `mark()` draws the
+ * placeholder glyph below. The app exposes this as an upload slot.
+ */
+export const BRAND_LOGO = (() => {
+  const f = join(ROOT, 'brand', 'logo.svg');
+  return existsSync(f) ? readFileSync(f, 'utf8').replace(/<\?xml[^>]*\?>/g, '').trim() : null;
+})();
 
 export const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) =>
@@ -88,7 +99,7 @@ export function nodeGrid({ cols = 9, rows = 5, gap = 4.6, dot = 0.42, live = [[2
 }
 
 /**
- * Onum Cloud mark - aperture square (one corner squared) holding concentric
+ * Onam Cloud mark - aperture square (one corner squared) holding concentric
  * arcs. PLACEHOLDER: swap `brand.logoSvg` in the brief to drop in the real mark.
  */
 export function mark({ size = '3.4rem', fg = 'var(--a2)', ring = 'var(--a1)' } = {}) {
@@ -107,8 +118,11 @@ export function avatar(author = {}, { size = '5.2rem' } = {}) {
   return `<div class="aperture avatar-initials" style="width:${size};height:${size};font-size:calc(${size} * .38)">${esc(initials)}</div>`;
 }
 
-export function logo({ name = 'Onum Cloud', size = '3.4rem', tone = 'light', logoSvg = null } = {}) {
-  const glyph = logoSvg || mark({ size, fg: tone === 'dark' ? 'var(--aInk)' : 'var(--a2)', ring: tone === 'dark' ? 'var(--aInk)' : 'var(--a1)' });
+export function logo({ name = 'Onam Cloud', size = '3.4rem', tone = 'light', logoSvg = null } = {}) {
+  const supplied = logoSvg || BRAND_LOGO;
+  const glyph = supplied
+    ? `<span class="mark-slot" style="width:${size};height:${size}">${supplied}</span>`
+    : mark({ size, fg: tone === 'dark' ? 'var(--aInk)' : 'var(--a2)', ring: tone === 'dark' ? 'var(--aInk)' : 'var(--a1)' });
   return `<div class="logo ${tone === 'dark' ? 'on-dark-type' : ''}">${glyph}<span class="logo-word">${esc(name)}</span></div>`;
 }
 
@@ -164,7 +178,7 @@ body{font-family:var(--body);-webkit-font-smoothing:antialiased;text-rendering:g
 .pad{padding:var(--pad, 8.5%);flex:1;min-height:0;display:flex;flex-direction:column;position:relative;z-index:20}
 /* Grows to fill and centres its own content, so leftover height splits evenly
    above and below instead of pooling at the bottom. */
-.stack{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.stack{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;margin-top:2.4rem}
 .stack.low{justify-content:flex-end}
 
 /* ---- fields ---- */
@@ -217,6 +231,8 @@ h2,.h2{font-family:var(--display);font-weight:700;letter-spacing:-.028em;line-he
 
 /* ---- lockups ---- */
 .logo{display:flex;align-items:center;gap:1.1rem;flex:none}
+.mark-slot{display:block;flex:none}
+.mark-slot svg,.mark-slot img{width:100%;height:100%;display:block;object-fit:contain}
 .logo-word{font-family:var(--display);font-weight:700;font-size:2.15rem;letter-spacing:-.02em;color:var(--paper)}
 .on-dark-type .logo-word,.field-accent .logo-word,.field-paper .logo-word{color:currentColor}
 
@@ -304,6 +320,19 @@ export const FIT_SCRIPT = `(function(){
           var kr = kids[i].getBoundingClientRect();
           if (!kr.height && !kr.width) continue;
           if (kr.top < top || kr.bottom > bottom) return true;
+        }
+        // A .stack that overflows its own track spills over its siblings while
+        // staying inside the pad - the headline lands on top of the logo. Only
+        // the stack's own children reveal it.
+        var stacks = pad.querySelectorAll('.stack');
+        for (var s = 0; s < stacks.length; s++) {
+          var sr = stacks[s].getBoundingClientRect();
+          var ch = stacks[s].children;
+          for (var c = 0; c < ch.length; c++) {
+            var cr = ch[c].getBoundingClientRect();
+            if (!cr.height && !cr.width) continue;
+            if (cr.top < sr.top - 1 || cr.bottom > sr.bottom + 1) return true;
+          }
         }
         return pad.scrollWidth > pad.clientWidth + 1;
       }

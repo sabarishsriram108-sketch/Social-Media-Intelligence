@@ -1,5 +1,5 @@
 /**
- * LinkedIn - Onum Cloud.
+ * LinkedIn - Onam Cloud.
  *
  * Register shift from Instagram: more restraint, more evidence. LinkedIn buyers
  * are evaluating credibility, not vibe. Decoration drops, the number and the

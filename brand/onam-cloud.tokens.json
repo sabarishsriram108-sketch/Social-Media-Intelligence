@@ -1,0 +1,111 @@
+{
+  "$meta": {
+    "brand": "Onam Cloud",
+    "owner": "Saints & Masters - Corporate Strategy",
+    "version": "1.0.0",
+    "assumption": "Brand colours follow the Onam Cloud orange / black / white direction supplied by the client. The exact orange is a proposed value pending the official kit - replace `palettes.*` to adopt it and every artboard reskins with no template edits.",
+    "rule": "Orange, black and white only. No fourth hue anywhere in the system."
+  },
+  "activePalette": "ember",
+  "palettes": {
+    "ember": {
+      "label": "Ember",
+      "story": "The house system. Near-black ground, one orange ramp running through it, white for the editorial field. Default for everything unless there is a reason.",
+      "ink": "#0B0B0D",
+      "ink2": "#161618",
+      "ink3": "#26262A",
+      "paper": "#FFFFFF",
+      "paper2": "#F1F0EE",
+      "mist": "#96959A",
+      "a1": "#FF6A00",
+      "a2": "#FFA23C",
+      "aInk": "#180800",
+      "onAccent": "#140600"
+    },
+    "ignition": {
+      "label": "Ignition",
+      "story": "Deeper, redder orange. Higher urgency - launches, migration deadlines, anything with a clock on it.",
+      "ink": "#0A0A0B",
+      "ink2": "#151416",
+      "ink3": "#252328",
+      "paper": "#FFFFFF",
+      "paper2": "#F2EFED",
+      "mist": "#98949A",
+      "a1": "#E5390B",
+      "a2": "#FF8A1F",
+      "aInk": "#1A0500",
+      "onAccent": "#160400"
+    },
+    "amber": {
+      "label": "Amber",
+      "story": "Warmer and goldier. Softer register - culture posts, hiring, festival and Onam-season creative.",
+      "ink": "#0C0B09",
+      "ink2": "#181613",
+      "ink3": "#282520",
+      "paper": "#FFFFFF",
+      "paper2": "#F3F0EA",
+      "mist": "#9A968C",
+      "a1": "#FF8A00",
+      "a2": "#FFC24D",
+      "aInk": "#1C0F00",
+      "onAccent": "#170C00"
+    }
+  },
+  "type": {
+    "display": "'Space Grotesk', 'DejaVu Sans', sans-serif",
+    "body": "'Inter', 'DejaVu Sans', sans-serif",
+    "scale": {
+      "ratio": 1.25,
+      "baseIsPercentOfCanvasWidth": 1
+    },
+    "rules": [
+      "Display face carries headlines only. Never set body copy in Space Grotesk.",
+      "Headline tracking is negative (-0.03em) at large sizes, neutral below 3rem.",
+      "Eyebrow / kicker text is uppercase Inter 600 at 0.16em tracking.",
+      "Never more than 3 type sizes on one artboard."
+    ]
+  },
+  "motifs": {
+    "contour": "Concentric rounded-rect contours radiating from a node. The house pattern. Low opacity, always anchored off-canvas.",
+    "nodeGrid": "Sparse dot matrix with 2-3 illuminated, connected nodes. Signals network and edge.",
+    "cut": "Signature 12-degree diagonal separating the accent field from the ink field. Always top-left to bottom-right.",
+    "aperture": "Rounded square frame with one corner squared to 0px. Used for logo lockups, avatars and imagery."
+  },
+  "geometry": {
+    "cutAngle": "-12deg",
+    "radius": {
+      "sm": "0.8rem",
+      "md": "1.6rem",
+      "lg": "2.6rem",
+      "pill": "999rem"
+    },
+    "margin": {
+      "narrow": "7%",
+      "default": "8.5%",
+      "wide": "10%"
+    },
+    "hairline": "0.09rem"
+  },
+  "gridRhythm": {
+    "note": "Instagram profile grid reads as a designed surface only if archetypes cycle. Post in this order and the grid forms a diagonal rhythm on its own.",
+    "cycle": [
+      "STATEMENT",
+      "DATA",
+      "INSIGHT"
+    ],
+    "STATEMENT": "Ink field. One huge sentence. Accent underline. Zero decoration beyond the contour motif.",
+    "DATA": "Accent field. One number at extreme scale. Ink type. Contour motif in aInk.",
+    "INSIGHT": "Paper field. Editorial: eyebrow, headline, 2-line standfirst, rule, byline. Ink type, accent rule."
+  },
+  "voice": {
+    "register": "Confident operator, not vendor. Specific over superlative. Onam Cloud connects Indian businesses privately to Azure, AWS and GCP over Equinix - talk about what that removes, not what it adds.",
+    "banned": [
+      "revolutionary",
+      "game-changing",
+      "seamless",
+      "unlock the power of",
+      "in today's fast-paced world"
+    ],
+    "numbers": "Always Indian numbering where the audience is domestic (crore/lakh), international format for global posts. State the basis of any metric."
+  }
+}

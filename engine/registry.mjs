@@ -1,10 +1,11 @@
 import * as instagram from '../templates/instagram.mjs';
 import * as linkedin from '../templates/linkedin.mjs';
 import * as x from '../templates/x.mjs';
+import * as facebook from '../templates/facebook.mjs';
 import * as youtube from '../templates/youtube.mjs';
 
-export const registry = { instagram, linkedin, x, youtube };
-export const aliases = { ig: 'instagram', li: 'linkedin', twitter: 'x', yt: 'youtube' };
+export const registry = { instagram, linkedin, facebook, x, youtube };
+export const aliases = { ig: 'instagram', li: 'linkedin', fb: 'facebook', twitter: 'x', yt: 'youtube' };
 
 export function resolve(platform, artboard) {
   const key = aliases[platform] || platform;

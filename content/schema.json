@@ -1,11 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Onum Cloud content brief",
+  "title": "Onam Cloud content brief",
   "type": "object",
   "required": ["id", "posts"],
   "properties": {
     "id": { "type": "string", "description": "Campaign slug; becomes the out/ directory name." },
-    "palette": { "enum": ["deep-current", "signal", "monsoon"] },
+    "palette": { "enum": ["ember", "ignition", "amber"] },
     "brand": {
       "type": "object",
       "properties": {
@@ -23,7 +23,7 @@
         "type": "object",
         "required": ["platform", "artboard"],
         "properties": {
-          "platform": { "enum": ["instagram", "linkedin", "x", "youtube", "ig", "li", "twitter", "yt"] },
+          "platform": { "enum": ["instagram", "linkedin", "facebook", "x", "youtube", "ig", "li", "fb", "twitter", "yt"] },
           "artboard": { "type": "string" },
           "name": { "type": "string", "description": "Optional suffix to disambiguate repeated artboards." },
           "eyebrow": { "type": "string" },

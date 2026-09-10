@@ -1,12 +1,12 @@
 # The content contract
 
-A brief is one JSON file describing one campaign. `content/briefs/dpdp-data-residency.json` is a complete worked example covering all 18 artboards.
+The app writes this for you — you only need this document if you are hand-writing a batch brief or wiring something new. A brief is one JSON file describing one campaign. `content/briefs/dpdp-data-residency.json` is a complete worked example covering all 18 artboards.
 
 ```json
 {
   "id": "campaign-slug",
-  "palette": "deep-current",
-  "brand": { "name": "Onum Cloud", "handle": "@onumcloud", "site": "onum.cloud", "logoSvg": null },
+  "palette": "ember",
+  "brand": { "name": "Onam Cloud", "handle": "@onamcloud", "site": "onamcloud.com", "logoSvg": null },
   "defaults": { "tag": "Compliance" },
   "posts": [ { "platform": "linkedin", "artboard": "post", "headline": "..." } ]
 }
@@ -18,7 +18,7 @@ A brief is one JSON file describing one campaign. `content/briefs/dpdp-data-resi
 
 | Field | Type | Used by | Notes |
 |---|---|---|---|
-| `platform` | `instagram` \| `linkedin` \| `x` \| `youtube` | all | `ig`, `li`, `twitter`, `yt` also accepted |
+| `platform` | `instagram` \| `linkedin` \| `facebook` \| `x` \| `youtube` | all | `ig`, `li`, `fb`, `twitter`, `yt` also accepted |
 | `artboard` | string | all | see `npm run specs` |
 | `eyebrow` | string | most | Uppercased automatically. Keep under ~40 chars. |
 | `headline` | string | most | The one idea. |
@@ -47,6 +47,8 @@ These are what the layouts are designed around, not hard caps — the fitter wil
 | `instagram/feed-data` | — (`caption` ≤ 22 words) | — |
 | `linkedin/post` | ≤ 12 words | ≤ 22 words, + 3 points |
 | `x/card` | ≤ 10 words | ≤ 25 words |
+| `facebook/post` | ≤ 11 words | ≤ 24 words, + 3 points |
+| `facebook/link-card` | ≤ 8 words | ≤ 24 words |
 | `youtube/thumbnail` | **≤ 5 words**, no word over ~11 chars | — |
 | `*/carousel` slide | ≤ 6 words | ≤ 35 words |
 | banners | ≤ 6 words | ignored |
@@ -54,10 +56,11 @@ These are what the layouts are designed around, not hard caps — the fitter wil
 ## Commands
 
 ```bash
+npm start                                        # the application
 npm run specs                                    # every artboard + dimensions
 node engine/cli.mjs render <brief>               # render to out/<id>/
 node engine/cli.mjs render <brief> --guides      # draw safe-area guides
-node engine/cli.mjs render <brief> --palette=signal
+node engine/cli.mjs render <brief> --palette=ignition
 node engine/cli.mjs push <brief>                 # render + push to Canva
 node engine/cli.mjs push <brief> --assets        # also upload flat PNGs
 node engine/cli.mjs doctor                       # what Canva will let you do

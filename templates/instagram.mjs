@@ -1,5 +1,5 @@
 /**
- * Instagram - Onum Cloud.
+ * Instagram - Onam Cloud.
  *
  * Grid strategy: the profile grid only reads as a designed surface if archetypes
  * cycle. Post STATEMENT -> DATA -> INSIGHT and the ink/accent/paper fields fall on

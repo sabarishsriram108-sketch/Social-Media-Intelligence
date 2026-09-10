@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Onum Cloud social intelligence CLI.
+ * Onam Cloud social intelligence CLI.
  *
  *   node engine/cli.mjs specs                      list every artboard + dimensions
  *   node engine/cli.mjs render <brief.json> [opts] render a brief to out/<id>/
@@ -9,7 +9,7 @@
  *
  * render options:
  *   --guides        draw safe-area guides (never use for final export)
- *   --palette=NAME  override the brief palette (deep-current | signal | monsoon)
+ *   --palette=NAME  override the brief palette (ember | ignition | amber)
  *   --no-pdf        skip PDF assembly
  *   --scale=N       device pixel ratio for PNGs (default 1)
  */
@@ -40,7 +40,7 @@ switch (cmd) {
   case 'specs': {
     const rows = listAll();
     const pad = (s, n) => String(s).padEnd(n);
-    console.log(`\n  Onum Cloud artboards (${rows.length} total)\n`);
+    console.log(`\n  Onam Cloud artboards (${rows.length} total)\n`);
     let current = '';
     for (const r of rows) {
       if (r.platform !== current) { current = r.platform; console.log(`  ${current.toUpperCase()}`); }
@@ -86,7 +86,7 @@ switch (cmd) {
 
   default:
     console.log(`
-  Onum Cloud - Social Media Intelligence
+  Onam Cloud - Social Media Intelligence
 
     npm run specs                          list all artboards
     node engine/cli.mjs render <brief>     render to out/<id>/
@@ -94,5 +94,7 @@ switch (cmd) {
     node engine/cli.mjs doctor             check Canva credentials
 
   Options: --guides  --palette=NAME  --no-pdf  --scale=N
+
+  The app (npm start) is usually what you want: http://127.0.0.1:4321
 `);
 }

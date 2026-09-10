@@ -11,7 +11,7 @@ export const OUT = join(ROOT, 'out');
 
 /** Merge brand + defaults down into each post so templates get one flat object. */
 export function normalise(brief) {
-  const brand = { name: 'Onum Cloud', ...(brief.brand || {}) };
+  const brand = { name: 'Onam Cloud', ...(brief.brand || {}) };
   const pal = palette(brief.palette);
   const posts = (brief.posts || []).map((p, i) => ({
     ...(brief.defaults || {}),

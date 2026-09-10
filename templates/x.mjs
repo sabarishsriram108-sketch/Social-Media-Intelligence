@@ -1,5 +1,5 @@
 /**
- * X / Twitter - Onum Cloud.
+ * X / Twitter - Onam Cloud.
  *
  * The feed is dense, fast and mostly text. The image's only job is to stop the
  * scroll and be readable at ~50% width on mobile. So: 16:9 for in-timeline cards

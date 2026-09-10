@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Onam Cloud Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%230B0B0D'/%3E%3Cpath d='M6 12a6 6 0 0 1 6-6h6v12H6Z' fill='%23FF6A00'/%3E%3Ccircle cx='28' cy='28' r='10' fill='none' stroke='%23FFA23C' stroke-width='3'/%3E%3Ccircle cx='28' cy='28' r='4' fill='%23FFA23C'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/brand/fonts/fonts.css">
+<style>
+:root{
+  --black:#0B0B0D; --surface:#141416; --surface2:#1C1C1F; --line:#2A2A2E; --line2:#3A3A40;
+  --white:#FFFFFF; --dim:#9A99A0; --dim2:#6E6D74;
+  --o1:#FF6A00; --o2:#FFA23C; --grad:linear-gradient(115deg,var(--o1),var(--o2));
+  --display:'Space Grotesk',system-ui,sans-serif; --body:'Inter',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--black);color:var(--white);font-family:var(--body);font-size:15px;line-height:1.55}
+body{padding:0 0 80px}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--o2);outline-offset:2px;border-radius:4px}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ---- header ---- */
+header{border-bottom:1px solid var(--line);background:rgba(11,11,13,.92);backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:50}
+.hbar{display:flex;align-items:center;gap:18px;padding:16px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.02em}
+.brand svg{width:30px;height:30px;flex:none}
+.chips{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.chip{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:5px 11px;border-radius:999px;border:1px solid var(--line2);color:var(--dim);white-space:nowrap}
+.chip.on{border-color:var(--o1);color:var(--o2)}
+.chip.warn{border-color:#5A3A12;color:#E8A14A}
+
+/* ---- steps ---- */
+section{padding-top:34px}
+.steplab{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.stepnum{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.1em;
+  color:var(--black);background:var(--grad);padding:3px 9px;border-radius:4px;flex:none}
+.steplab h2{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.02em}
+.steplab .sub{color:var(--dim2);font-size:13.5px;margin-left:auto;text-align:right}
+section[hidden]{display:none!important}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 17px;
+  text-align:left;cursor:pointer;transition:border-color .13s,background .13s;display:flex;flex-direction:column;gap:6px}
+.tile:hover{border-color:var(--line2);background:var(--surface2)}
+.tile[aria-pressed="true"]{border-color:var(--o1);background:linear-gradient(180deg,rgba(255,106,0,.11),transparent)}
+.tile .t{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:-.01em}
+.tile .d{font-size:12.5px;color:var(--dim2);line-height:1.45}
+
+/* ---- composer ---- */
+.composer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+textarea{width:100%;min-height:132px;background:var(--black);border:1px solid var(--line);
+  border-radius:10px;padding:14px 15px;resize:vertical;line-height:1.6}
+textarea::placeholder{color:var(--dim2)}
+.crow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.pals{display:flex;gap:7px}
+.pal{width:34px;height:26px;border-radius:6px;border:1px solid var(--line2);cursor:pointer;padding:0}
+.pal[aria-pressed="true"]{border-color:var(--white);box-shadow:0 0 0 2px rgba(255,255,255,.16)}
+.lbl{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim2);font-weight:600}
+.btn{background:var(--grad);color:var(--black);border:0;border-radius:999px;padding:11px 26px;
+  font-weight:700;font-size:14.5px;cursor:pointer;letter-spacing:-.01em}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--white);border:1px solid var(--line2)}
+.btn.ghost:hover:not(:disabled){border-color:var(--o1);color:var(--o2)}
+
+/* ---- results ---- */
+.results{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,1fr);gap:22px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:17px}
+.panel h3{font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.01em;margin-bottom:13px;
+  display:flex;align-items:center;gap:9px}
+.shots{display:flex;flex-direction:column;gap:16px}
+figure{margin:0}
+figure img{width:100%;display:block;border-radius:9px;border:1px solid var(--line);background:#000}
+figcaption{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--dim2);
+  margin-top:7px;font-variant-numeric:tabular-nums}
+
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim2);
+  font-weight:600;margin-bottom:5px}
+.field input,.field textarea{width:100%;background:var(--black);border:1px solid var(--line);
+  border-radius:8px;padding:9px 11px;font-size:13.5px}
+.field textarea{min-height:64px;line-height:1.5}
+.caption-box{background:var(--black);border:1px solid var(--line);border-radius:9px;padding:12px 13px;
+  font-size:13.5px;line-height:1.6;white-space:pre-wrap}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.tags span{font-size:12px;color:var(--o2);background:rgba(255,106,0,.09);border:1px solid rgba(255,106,0,.28);
+  padding:2px 8px;border-radius:999px}
+.note{border-left:2px solid var(--o1);background:rgba(255,106,0,.07);padding:10px 13px;
+  border-radius:0 8px 8px 0;font-size:13px;line-height:1.5;margin-top:12px;color:#F2D9C2}
+.err{border-left-color:#E5484D;background:rgba(229,72,77,.09);color:#F7C5C7}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.designlinks a{display:block;color:var(--o2);font-size:13px;margin-top:6px;word-break:break-all}
+
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.25);
+  border-top-color:var(--o2);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+.empty{color:var(--dim2);font-size:13.5px;text-align:center;padding:40px 20px;line-height:1.6}
+@media (max-width:860px){ .results{grid-template-columns:1fr} }
+</style>
+</head><body>
+
+<header><div class="wrap hbar">
+  <div class="brand">
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M10 2h28a8 8 0 0 1 8 8v28a8 8 0 0 1-8 8H10a8 8 0 0 1-8-8V10a8 8 0 0 1 8-8Z" fill="none" stroke="#FF6A00" stroke-width="2.6" opacity=".6"/>
+      <path d="M2 10a8 8 0 0 1 8-8h8v16H2Z" fill="#FF6A00"/>
+      <circle cx="27" cy="27" r="11" fill="none" stroke="#FFA23C" stroke-width="2.8"/>
+      <circle cx="27" cy="27" r="5" fill="#FFA23C"/>
+    </svg>
+    <span>Onam Cloud <span style="color:var(--o2)">Studio</span></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</div></header>
+
+<main class="wrap">
+
+  <section id="s1">
+    <div class="steplab"><span class="stepnum">01</span><h2>Where is this going?</h2></div>
+    <div class="tiles" id="platforms"></div>
+  </section>
+
+  <section id="s2" hidden>
+    <div class="steplab"><span class="stepnum">02</span><h2>What kind of post?</h2>
+      <span class="sub" id="s2sub"></span></div>
+    <div class="tiles" id="types"></div>
+  </section>
+
+  <section id="s3" hidden>
+    <div class="steplab"><span class="stepnum">03</span><h2>What do you want to say?</h2>
+      <span class="sub">Plain text. Claude writes it into the layout.</span></div>
+    <div class="composer">
+      <textarea id="text" placeholder="Type or paste it however it comes out of your head.&#10;&#10;e.g. We just cut round-trip latency to Azure Mumbai by 38% for a Kochi logistics customer by moving them onto a private Equinix link instead of public internet routing. Want to push this as proof that private connectivity is not just a security story, it is a performance one."></textarea>
+      <div class="crow">
+        <span class="lbl">Palette</span>
+        <div class="pals" id="pals"></div>
+        <button class="btn" id="go" style="margin-left:auto">Generate</button>
+      </div>
+    </div>
+    <div id="genmsg"></div>
+  </section>
+
+  <section id="s4" hidden>
+    <div class="steplab"><span class="stepnum">04</span><h2>Review, tweak, send to Canva</h2>
+      <span class="sub" id="s4sub"></span></div>
+    <div class="results">
+      <div class="panel">
+        <h3>Artboards</h3>
+        <div class="shots" id="shots"></div>
+      </div>
+      <div>
+        <div class="panel">
+          <h3>Copy</h3>
+          <div id="fields"></div>
+          <div class="actions">
+            <button class="btn ghost" id="reapply">Apply changes</button>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <h3>Caption to post with it</h3>
+          <div class="caption-box" id="cap"></div>
+          <div class="tags" id="tags"></div>
+          <div class="actions">
+            <button class="btn ghost" id="copycap">Copy caption</button>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <h3>Canva</h3>
+          <div id="canvamsg" class="empty" style="padding:8px 0;text-align:left"></div>
+          <div class="actions"><button class="btn" id="push">Push to Canva</button></div>
+          <div class="designlinks" id="designs"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c; if (h !== undefined) n.innerHTML = h; return n; };
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const state = { catalog: null, platform: null, type: null, palette: null, job: null };
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const body = await r.json().catch(() => ({ error: 'Unreadable response from the server.' }));
+  if (!r.ok) throw new Error(body.error || ('Request failed: ' + r.status));
+  return body;
+}
+
+/* ---------------------------------------------------------------- bootstrap */
+(async function init() {
+  state.catalog = await api('/api/catalog');
+  state.palette = state.catalog.activePalette;
+
+  const cw = state.catalog.copywriter === 'claude';
+  const chips = $('#chips');
+  chips.append(chipEl(cw ? 'Copy: Claude' : 'Copy: fallback', cw ? 'on' : 'warn'));
+  chips.append(chipEl(state.catalog.hasLogo ? 'Logo: yours' : 'Logo: placeholder', state.catalog.hasLogo ? 'on' : 'warn'));
+  const cv = await api('/api/canva/status');
+  chips.append(chipEl(cv.ready ? 'Canva: connected' : 'Canva: not connected', cv.ready ? 'on' : 'warn'));
+  $('#canvamsg').textContent = cv.hint;
+  $('#push').disabled = !cv.ready;
+
+  for (const p of state.catalog.platforms) {
+    const b = el('button', 'tile');
+    b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+    b.append(el('span', 't', esc(p.label)), el('span', 'd', esc(p.blurb)));
+    b.onclick = () => pickPlatform(p, b);
+    $('#platforms').append(b);
+  }
+
+  for (const p of state.catalog.palettes) {
+    const b = el('button', 'pal');
+    b.type = 'button'; b.title = p.label + ' — ' + p.story;
+    b.style.background = `linear-gradient(115deg, ${p.a1}, ${p.a2})`;
+    b.setAttribute('aria-pressed', String(p.id === state.palette));
+    b.onclick = () => { state.palette = p.id; document.querySelectorAll('.pal').forEach((x, i) => x.setAttribute('aria-pressed', String(state.catalog.palettes[i].id === p.id))); };
+    $('#pals').append(b);
+  }
+})();
+
+const chipEl = (text, cls) => el('span', 'chip ' + (cls || ''), esc(text));
+
+function pickPlatform(p, btn) {
+  state.platform = p; state.type = null;
+  document.querySelectorAll('#platforms .tile').forEach(t => t.setAttribute('aria-pressed', String(t === btn)));
+  $('#s2sub').textContent = p.label;
+  const box = $('#types'); box.innerHTML = '';
+  for (const t of p.types) {
+    const b = el('button', 'tile');
+    b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+    b.append(el('span', 't', esc(t.label)), el('span', 'd', esc(t.hint)));
+    b.onclick = () => pickType(t, b);
+    box.append(b);
+  }
+  $('#s2').hidden = false; $('#s3').hidden = true; $('#s4').hidden = true;
+  $('#s2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function pickType(t, btn) {
+  state.type = t;
+  document.querySelectorAll('#types .tile').forEach(x => x.setAttribute('aria-pressed', String(x === btn)));
+  $('#s3').hidden = false;
+  $('#s3').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  $('#text').focus();
+}
+
+/* ------------------------------------------------------------------ generate */
+$('#go').onclick = async () => {
+  const text = $('#text').value.trim();
+  if (!text) { msg('#genmsg', 'Write something first — even one messy sentence is enough.', true); return; }
+  const btn = $('#go'); btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span> Writing and drawing…';
+  msg('#genmsg', '');
+  try {
+    const job = await api('/api/generate', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ platform: state.platform.id, type: state.type.id, text, palette: state.palette }),
+    });
+    state.job = job;
+    showJob(job);
+    if (job.degraded) msg('#genmsg', job.degraded, true);
+  } catch (e) {
+    msg('#genmsg', e.message, true);
+  } finally { btn.disabled = false; btn.textContent = original; }
+};
+
+function msg(sel, text, isErr) {
+  const box = $(sel); box.innerHTML = '';
+  if (text) box.append(el('div', 'note' + (isErr ? ' err' : ''), esc(text)));
+}
+
+/* -------------------------------------------------------------------- render */
+const EDITABLE = [
+  ['eyebrow', 'Eyebrow', 'input'], ['headline', 'Headline', 'textarea'],
+  ['lede', 'Standfirst', 'textarea'], ['quote', 'Quote', 'textarea'],
+  ['value', 'Value', 'input'], ['unit', 'Unit', 'input'],
+  ['caption', 'Caption', 'textarea'], ['source', 'Source', 'textarea'],
+  ['tag', 'Tag', 'input'], ['episode', 'Episode', 'input'],
+  ['duration', 'Duration', 'input'], ['cadence', 'Cadence', 'input'],
+];
+
+function showJob(job) {
+  $('#s4').hidden = false;
+  $('#s4sub').textContent = `${state.platform.label} · ${state.type.label}`;
+
+  const shots = $('#shots'); shots.innerHTML = '';
+  for (const a of job.artboards) {
+    const f = el('figure');
+    const img = el('img'); img.src = a.url + '?t=' + Date.now(); img.alt = a.label; img.loading = 'lazy';
+    const cap = el('figcaption');
+    cap.append(el('span', '', esc(a.label)),
+      el('span', '', esc(a.w + '×' + a.h) + (a.fitted ? ' · type shrunk to ' + Math.round(a.fitted * 100) + '%' : '')));
+    f.append(img, cap); shots.append(f);
+  }
+
+  const fields = $('#fields'); fields.innerHTML = '';
+  let any = false;
+  for (const [key, label, kind] of EDITABLE) {
+    if (job.fields[key] === null || job.fields[key] === undefined) continue;
+    any = true;
+    const w = el('div', 'field');
+    w.append(el('label', '', esc(label)));
+    const inp = el(kind); inp.id = 'f_' + key; inp.value = job.fields[key];
+    w.append(inp); fields.append(w);
+  }
+  if (!any) fields.append(el('div', 'empty', 'This artboard takes no free-text fields.'));
+
+  if (Array.isArray(job.fields.points) && job.fields.points.length) {
+    const w = el('div', 'field');
+    w.append(el('label', '', 'Points (one per line)'));
+    const ta = el('textarea'); ta.id = 'f_points'; ta.value = job.fields.points.join('\n');
+    w.append(ta); fields.append(w);
+  }
+  if (Array.isArray(job.fields.slides) && job.fields.slides.length) {
+    job.fields.slides.forEach((s, i) => {
+      const w = el('div', 'field');
+      w.append(el('label', '', `Slide ${i + 1} — title / body`));
+      const a = el('input'); a.id = `f_slide${i}_title`; a.value = s.title || '';
+      const b = el('textarea'); b.id = `f_slide${i}_body`; b.value = s.body || ''; b.style.marginTop = '6px';
+      w.append(a, b); fields.append(w);
+    });
+  }
+
+  $('#cap').textContent = job.fields.postCaption || '(no caption generated)';
+  const tags = $('#tags'); tags.innerHTML = '';
+  (job.fields.hashtags || []).forEach(h => tags.append(el('span', '', esc(h.startsWith('#') ? h : '#' + h))));
+  if (job.fields.notes) { msg('#genmsg', job.fields.notes); }
+  $('#designs').innerHTML = '';
+  $('#s4').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* -------------------------------------------------------------------- edits */
+$('#reapply').onclick = async () => {
+  const btn = $('#reapply'); btn.disabled = true; const t = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span> Redrawing…';
+  try {
+    const patch = {};
+    for (const [key] of EDITABLE) { const i = $('#f_' + key); if (i) patch[key] = i.value; }
+    const pts = $('#f_points'); if (pts) patch.points = pts.value.split('\n').map(s => s.trim()).filter(Boolean);
+    if (Array.isArray(state.job.fields.slides)) {
+      patch.slides = state.job.fields.slides.map((s, i) => ({
+        ...s,
+        title: ($('#f_slide' + i + '_title') || {}).value ?? s.title,
+        body: ($('#f_slide' + i + '_body') || {}).value ?? s.body,
+      }));
+    }
+    const job = await api('/api/rerender', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ jobId: state.job.jobId, fields: patch, palette: state.palette }),
+    });
+    state.job = job; showJob(job);
+  } catch (e) { msg('#genmsg', e.message, true); }
+  finally { btn.disabled = false; btn.textContent = t; }
+};
+
+$('#copycap').onclick = async () => {
+  const text = ($('#cap').textContent || '') + '\n\n' + [...document.querySelectorAll('#tags span')].map(s => s.textContent).join(' ');
+  try { await navigator.clipboard.writeText(text.trim()); $('#copycap').textContent = 'Copied'; setTimeout(() => $('#copycap').textContent = 'Copy caption', 1400); }
+  catch { $('#copycap').textContent = 'Select and copy manually'; }
+};
+
+$('#push').onclick = async () => {
+  const btn = $('#push'); btn.disabled = true; const t = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span> Sending…';
+  try {
+    const r = await api('/api/canva/push', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ jobId: state.job.jobId }),
+    });
+    const box = $('#designs'); box.innerHTML = '';
+    for (const d of r.designs) {
+      if (d.editUrl) { const a = el('a', '', 'Open in Canva → ' + esc(d.file)); a.href = d.editUrl; a.target = '_blank'; a.rel = 'noopener'; box.append(a); }
+      else box.append(el('div', 'empty', 'Imported ' + esc(d.file) + ' — open it from your Canva projects.'));
+    }
+    btn.textContent = 'Sent to Canva';
+  } catch (e) { msg('#genmsg', 'Canva push failed: ' + e.message, true); btn.textContent = t; }
+  finally { btn.disabled = false; }
+};
+</script>
+</body></html>

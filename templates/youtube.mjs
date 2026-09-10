@@ -1,5 +1,5 @@
 /**
- * YouTube - Onum Cloud.
+ * YouTube - Onam Cloud.
  *
  * A thumbnail is judged at roughly 210x118px in a sidebar. Everything here is
  * built backwards from that: five words maximum, display type at ~11% of canvas

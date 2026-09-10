@@ -1,10 +1,10 @@
 # Connecting Claude and Canva
 
-There are two connections, they do different jobs, and you want both.
+There are two connections, they do different jobs, and you want both. **The application (`npm start`) uses the second one** — its Canva panel shows which step you are on and what is missing.
 
 | | Canva AI Connector (MCP) | Canva Connect API (this repo) |
 |---|---|---|
-| How you drive it | Conversation with Claude | `node engine/cli.mjs push <brief>` |
+| How you drive it | Conversation with Claude | The app's **Push to Canva** button, or `node engine/cli.mjs push <brief>` |
 | Good for | One-offs, exploring, "make me a variant" | Repeatable, on-brand, batch production |
 | Design consistency | Whatever Claude composes that day | Byte-identical to the committed template |
 | Setup | 2 minutes | ~20 minutes, once |
@@ -40,8 +40,8 @@ Once connected Claude can create designs, edit existing ones, search your design
 2. Register the redirect URL `http://127.0.0.1:8910/oauth/redirect`.
 3. Add the scopes listed in `engine/canva.mjs` (`SCOPES`).
 4. `cp .env.example .env` and fill in `CANVA_CLIENT_ID` / `CANVA_CLIENT_SECRET`.
-5. Run `node engine/cli.mjs push content/briefs/<file>.json`. The first run opens a browser for consent; tokens are cached in `.canva-tokens.json` (gitignored) and refreshed automatically.
-6. `node engine/cli.mjs doctor` reports which push path your plan actually gives you.
+5. Run `node engine/cli.mjs push content/briefs/dpdp-data-residency.json` **once, in a terminal**. It opens a browser for consent; tokens are cached in `.canva-tokens.json` (gitignored) and refreshed automatically from then on. This one step has to happen at the command line — the app cannot open the consent window for you.
+6. `node engine/cli.mjs doctor` reports which push path your plan actually gives you. Restart the app and its Canva chip turns green.
 
 ### Which push path you get
 
@@ -51,7 +51,7 @@ Once connected Claude can create designs, edit existing ones, search your design
 
 To adopt it:
 
-1. Rebuild each artboard once as a Canva **Brand Template**, matching `templates/*.mjs` (dimensions are in `npm run specs`).
+1. Rebuild each artboard once as a Canva **Brand Template**, matching `templates/*.mjs` (all 22 dimensions are in `npm run specs`).
 2. Name each editable element to match the brief field: `eyebrow`, `headline`, `lede`, `value`, `unit`, `caption`, `source`, `author_name`, `author_role`, `tag`, `cta_headline`, `cta_action`.
 3. `node -e "import('./engine/canva.mjs').then(m=>m.listBrandTemplates().then(r=>console.log(JSON.stringify(r,null,2))))"` to get template IDs.
 4. Put the ID on the post in the brief as `brandTemplateId`, and call `autofill()` instead of `importDesign()`.

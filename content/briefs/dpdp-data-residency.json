@@ -1,10 +1,10 @@
 {
   "id": "dpdp-data-residency",
-  "palette": "deep-current",
+  "palette": "ember",
   "brand": {
-    "name": "Onum Cloud",
-    "handle": "@onumcloud",
-    "site": "onum.cloud"
+    "name": "Onam Cloud",
+    "handle": "@onamcloud",
+    "site": "onamcloud.com"
   },
   "defaults": {
     "tag": "Compliance"
@@ -26,7 +26,7 @@
       "value": "41",
       "unit": "%",
       "caption": "of Indian enterprises re-architected twice because the first data-residency move was lift-and-shift.",
-      "source": "Onum Cloud migration desk, 62 engagements, FY25-26",
+      "source": "Onam Cloud migration desk, 62 engagements, FY25-26",
       "tag": "Archetype B"
     },
     {
@@ -69,7 +69,7 @@
       "cta": {
         "eyebrow": "Next step",
         "headline": "Get the 90-minute residency readiness review.",
-        "action": "onum.cloud/dpdp"
+        "action": "onamcloud.com/dpdp"
       }
     },
     {
@@ -124,7 +124,7 @@
           "pct": 25
         }
       ],
-      "source": "Onum Cloud migration desk, n=62 engagements, FY25-26. Costs indexed to design-stage baseline.",
+      "source": "Onam Cloud migration desk, n=62 engagements, FY25-26. Costs indexed to design-stage baseline.",
       "tag": "Evidence"
     },
     {
@@ -173,15 +173,15 @@
       "cta": {
         "eyebrow": "Next step",
         "headline": "Book the residency readiness review.",
-        "action": "onum.cloud/dpdp"
+        "action": "onamcloud.com/dpdp"
       }
     },
     {
       "platform": "linkedin",
       "artboard": "page-banner",
       "headline": "Cloud that stays in country.",
-      "emphasise": 2,
-      "lede": "Onum Cloud - migration, residency and FinOps for Indian enterprises."
+      "emphasise": 3,
+      "lede": "Onam Cloud - migration, residency and FinOps for Indian enterprises."
     },
     {
       "platform": "linkedin",
@@ -189,6 +189,50 @@
       "headline": "Cloud strategy that survives the audit.",
       "emphasise": 2,
       "lede": "Corporate Strategy at Saints & Masters. Writing about cloud economics, residency and Indian enterprise IT."
+    },
+    {
+      "platform": "facebook",
+      "artboard": "post",
+      "eyebrow": "DPDP - plain English",
+      "headline": "If your backups leave India, that is a transfer.",
+      "emphasise": 3,
+      "lede": "Not a backup. Under the DPDP Act it counts as a cross-border transfer, and it is the finding we see most often.",
+      "points": [
+        "Your DR region in Singapore is in scope.",
+        "So is every logging and support tool that touches personal data.",
+        "Fixing it at design costs 1x. After an audit finding, 9x."
+      ],
+      "cta": {
+        "action": "onamcloud.com/dpdp"
+      },
+      "tag": "Compliance"
+    },
+    {
+      "platform": "facebook",
+      "artboard": "link-card",
+      "eyebrow": "Onam Cloud",
+      "headline": "Private links to every major cloud.",
+      "emphasise": 3,
+      "lede": "Built in Kochi on Equinix. Your traffic reaches the hyperscalers without crossing the public internet."
+    },
+    {
+      "platform": "facebook",
+      "artboard": "cover",
+      "headline": "Cloud that stays in country.",
+      "emphasise": 2,
+      "lede": "Onam Cloud - private connectivity for Indian businesses, from Saints & Masters."
+    },
+    {
+      "platform": "facebook",
+      "artboard": "story",
+      "eyebrow": "60 seconds",
+      "headline": "The DR region that broke compliance.",
+      "emphasise": 2,
+      "lede": "One diagram. Three findings.",
+      "cta": {
+        "action": "onamcloud.com/dpdp"
+      },
+      "tag": "Story"
     },
     {
       "platform": "x",
@@ -228,7 +272,7 @@
           "pct": 100
         }
       ],
-      "source": "Onum Cloud migration desk, n=62, FY25-26"
+      "source": "Onam Cloud migration desk, n=62, FY25-26"
     },
     {
       "platform": "x",
